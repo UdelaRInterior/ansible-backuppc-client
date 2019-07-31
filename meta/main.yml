@@ -1,0 +1,22 @@
+---
+galaxy_info:
+  author: Emilien Mantel, Víctor Torterola, Daniel Viñar
+  description: Install and manage BackupPC Client
+  company: Universidad de la República (UdelaR)
+  license: GPLv3
+  min_ansible_version: 1.9
+  platforms:
+  - name: Debian
+    versions:
+    - stretch
+  galaxy_tags:
+  - backup
+  - restore
+  - rsync
+  - security
+  - debian
+  - networking
+  - system
+  - web
+dependencies: []
+
