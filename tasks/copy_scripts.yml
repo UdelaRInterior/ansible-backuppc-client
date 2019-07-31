@@ -1,0 +1,30 @@
+---
+
+# Copy the pre dump and post dump scripts to server 
+
+- name: Create directory for scripts
+  file:
+    path: "{{ backuppc_local_fetch_dir }}/scripts"
+    state: directory 
+    owner: backuppc
+    group: backuppc
+    mode: 0766
+
+- name: Copy pre_dump backup script
+  # sudo: yes
+  copy:
+    src: "{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/files/backuppc/pre_dump.sh"
+    dest: "{{ backuppc_local_fetch_dir }}/scripts/pre_dump.sh"
+    owner: backuppc
+    group: backuppc
+    mode: 0766
+
+- name: Copy post_dump backup script
+  # sudo: yes
+  copy:
+    src: "{{ playbook_dir }}/host_vars/{{ inventory_hostname}}/files/backuppc/post_dump.sh"
+    dest: "{{ backuppc_local_fetch_dir }}/scripts/post_dump.sh"
+    owner: backuppc
+    group: backuppc
+    mode: 0766
+

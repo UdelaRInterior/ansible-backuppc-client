@@ -1,0 +1,18 @@
+---
+
+- name: INCLUDE | install rsync and backuppc user
+  include_tasks: install.yml
+
+- name: INCLUDE | config user mysql 
+  include_tasks: mysql_config.yml
+  when: backuppc_mysql_dump
+
+- name: INCLUDE | add file bash
+  include_tasks: copy_scripts.yml
+  when: backuppc_scripts
+
+- name: INCLUDE | Backuppc server configuration
+  include: config.yml
+
+- name: INCLUDE | SSH to server related configuration
+  include: ssh.yml

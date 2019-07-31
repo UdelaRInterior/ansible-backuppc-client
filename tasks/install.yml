@@ -1,0 +1,45 @@
+---
+# Configure the backuppc user in the client host to backup
+
+- name: Instalar Rsync
+  apt:
+    name: rsync
+    state: present
+
+- name: Make sure we have a 'backuppc' group 
+  group: 
+    name: backuppc 
+    state: present 
+
+- name: Create user
+  user:
+    name: backuppc
+    home: /var/lib/backuppc
+    shell: /bin/bash
+    groups: backuppc
+
+- name: Create dir
+  file:
+    path: /var/lib/backuppc/.ssh
+    state: directory
+    owner: backuppc
+    group: backuppc
+    mode: 0700
+
+- name: Define cmnd_alias to allow 'backuppc' privileges 
+  lineinfile: 
+    dest: /etc/sudoers 
+    state: present 
+    regexp: '^Cmnd_Alias BACKUPS' 
+    line: '{{backuppc_sudoer}}' 
+    validate: 'visudo -cf %s' 
+
+- name: Allow 'backuppc' group to have passwordless sudo 
+  lineinfile: 
+    dest: /etc/sudoers 
+    state: present 
+    regexp: '^%backuppc' 
+    line: '%backuppc ALL=(ALL) NOPASSWD: BACKUPS' 
+    validate: 'visudo -cf %s' 
+
+...

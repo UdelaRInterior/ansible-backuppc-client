@@ -1,0 +1,27 @@
+---
+## Configure the client in the backuppc server 
+
+- name: TEMPLATE | Put host specific config on BackupPC server
+  template: 
+    src: etc/backuppc/_host_config.pl.j2
+    dest: '/etc/backuppc/{{ inventory_hostname }}.pl'
+    owner: backuppc
+    group: www-data
+    mode: 0644
+  delegate_to: "{{backuppc_server_name}}"
+  when: backup_state is not defined or backup_state == 'present'
+  notify: restart backuppc
+
+- name: FILE | Delete config if needed
+  file: path='/etc/backuppc/{{ inventory_hostname }}.pl' state=absent
+  delegate_to: "{{backuppc_server_name}}"
+  when: backup_state is defined and backup_state == 'absent'
+  notify: restart backuppc
+
+- name: LINEINFILE | Add host to BackupPC server
+  lineinfile:
+    dest: /etc/backuppc/hosts
+    line: "{{ inventory_hostname }}\t0\tbackuppc\t{{backuppc_users}}"
+    regexp: "^{{ inventory_hostname }}"
+    state: "{{ backup_state if backup_state is defined else 'present' }}"
+  delegate_to: "{{backuppc_server_name}}"

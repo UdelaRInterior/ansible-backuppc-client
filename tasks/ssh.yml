@@ -1,0 +1,29 @@
+---
+## Configure backuppc user ssh server key in the client
+
+- name: COMMAND | Show SSH pub key
+  command: "cat {{ backuppc_local_fetch_dir }}/.ssh/id_rsa.pub"
+  register: cat
+  changed_when: false
+  delegate_to: "{{backuppc_server_name}}"
+
+- name: Add SSH pub key for hosts
+  sudo: yes
+  authorized_key:
+    user: backuppc
+    state: present
+    key: "{{ cat.stdout }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: ssh public key
+  shell: "ssh-keyscan {{ inventory_hostname }}"
+  register: ssh_known_host_results
+  ignore_errors: yes
+
+- name: add to known_hosts
+  known_hosts:
+    path: /var/lib/backuppc/.ssh/known_hosts
+    name: "{{inventory_hostname}}"
+    key: "{{ ssh_known_host_results.stdout }}"
+    state: present
+  delegate_to: "{{ backuppc_server_name }}"

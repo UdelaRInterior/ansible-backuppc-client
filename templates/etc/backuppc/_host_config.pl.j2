@@ -1,0 +1,53 @@
+#
+# {{ ansible_managed }}
+#
+
+{% if include_files is defined %}
+$Conf{BackupFilesOnly} = {'*' => [
+
+{% for item in include_files %}
+		'{{ item }}'{% if not loop.last %},{% endif %}
+{% endfor %}
+	]
+};
+
+{% endif %}
+
+{% if exclude_files is defined %}
+$Conf{BackupFilesExclude} = {
+	'*' => [
+{% for item in exclude_files %}
+		'{{ item }}'{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	]
+};
+{% endif %}
+
+$Conf{XferMethod} = '{{ xfermethod | default("rsync") }}';
+
+$Conf{ClientCharsetLegacy} = 'utf-8';
+
+{% if backuppc_scripts is defined and backuppc_scripts %}
+
+$Conf{DumpPreUserCmd} = '{{ backuppc_DumpPreUserCmd }}';
+
+$Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
+
+{% endif %}
+
+{% if more is defined %}
+# More options...
+{% for key, value in more.iteritems() %}
+{% if value is string %}
+$Conf{{ '{' }}{{ key }}{{ '}' }} = '{{ value }}';
+{% else %}
+$Conf{{ '{' }}{{ key }}{{ '}' }} = [
+  {% for i in value %}'{{ i }}'{% if not loop.last %}, {% endif %}
+{% endfor %}
+
+];
+
+{% endif %}
+{% endfor %}
+{% endif %}
