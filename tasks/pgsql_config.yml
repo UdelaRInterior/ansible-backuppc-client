@@ -1,0 +1,25 @@
+# Configure PostgreSQL
+
+- name: Create directory for scripts
+  file:
+    path: "{{ backuppc_local_fetch_dir }}/scripts"
+    state: directory 
+    owner: backuppc
+    group: backuppc
+    mode: 0766
+
+- name: TEMPLATE | Add script backup PostgreSQL
+  template:
+    src: etc/pgsql/dump.sh.j2
+    dest: '{{ backuppc_local_fetch_dir }}/scripts/pre_dump.sh'
+    owner: root
+    group: root
+    mode: 0644
+
+- name: TEMPLATE | Add script end_backup PostgreSQL
+  template:
+    src: etc/pgsql/end_dump.sh.j2
+    dest: '{{ backuppc_local_fetch_dir }}/scripts/post_dump.sh'
+    owner: root
+    group: root
+    mode: 0644

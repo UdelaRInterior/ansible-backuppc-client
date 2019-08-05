@@ -36,6 +36,14 @@ $Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
 
 {% endif %}
 
+{% if backuppc_db_dump is defined and backuppc_db_dump == 'pgsql' %}
+
+$Conf{DumpPreUserCmd} = '{{ backuppc_DumpPreUserCmd }}';
+
+$Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
+
+{% endif %}
+
 {% if more is defined %}
 # More options...
 {% for key, value in more.iteritems() %}

@@ -18,7 +18,8 @@ backuppc_local_fetch_dir: /var/lib/backuppc
 # Flag for a mysql dump before backups
 # If true, defines a mysql user named backuppc with SELECT access to all bases
 ## (the mysql dump itself must be defiend in folling scripts)
-backuppc_mysql_dump: false 
+backuppc_db_dump: ''
+#backuppc_mysql_dump: false 
 
 # Flag to install the scripts pre_dump.sh and post_dump.sh
 backuppc_scripts: false 

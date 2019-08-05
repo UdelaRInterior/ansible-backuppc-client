@@ -3,9 +3,13 @@
 - name: INCLUDE | install rsync and backuppc user
   include_tasks: install.yml
 
-- name: INCLUDE | config user mysql 
+- name: INCLUDE | config user mysql
   include_tasks: mysql_config.yml
-  when: backuppc_mysql_dump
+  when: backuppc_db_dump == 'mysql'
+
+- name: INCLUDE | config PostgreSQL
+  include_tasks: pgsql_config.yml
+  when: backuppc_db_dump == 'pgsql'
 
 - name: INCLUDE | add file bash
   include_tasks: copy_scripts.yml
