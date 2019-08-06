@@ -18,13 +18,12 @@ backuppc_local_fetch_dir: /var/lib/backuppc
 # Define pgsql database to backup
 backuppc_db_pgsql: ''
 
-# Flag for a mysql or pgsql dump before backups
-# Mysql option, defines a mysql user named backuppc with SELECT access to all bases
-# Pgsql option, database backup indicated in the backuppc_db_pgsql variable 
-# we have three possible options pgsql, mysql or null
-## (the mysql dump itself must be defiend in folling scripts)
+# Three states variabale for a mysql or pgsql dump before backups. three possible values: pgsql, mysql or null
+# Mysql option defines a mysql user named backuppc with SELECT access to all bases. You must add yourself the
+# scripts pre_dump.sh and post_dump.sh hereafter, using this user.  
+# For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the
+# backuppc_db_pgsql variable 
 backuppc_db_dump: ''
-#backuppc_mysql_dump: false 
 
 # Flag to install the scripts pre_dump.sh and post_dump.sh
 backuppc_scripts: false 
