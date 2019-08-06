@@ -15,8 +15,13 @@ include_files:
 # The home dir of user backuppc which is used to perform backups (in the client and the server)
 backuppc_local_fetch_dir: /var/lib/backuppc  
 
-# Flag for a mysql dump before backups
-# If true, defines a mysql user named backuppc with SELECT access to all bases
+# Define pgsql database to backup
+backuppc_db_pgsql: ''
+
+# Flag for a mysql or pgsql dump before backups
+# Mysql option, defines a mysql user named backuppc with SELECT access to all bases
+# Pgsql option, database backup indicated in the backuppc_db_pgsql variable 
+# we have three possible options pgsql, mysql or null
 ## (the mysql dump itself must be defiend in folling scripts)
 backuppc_db_dump: ''
 #backuppc_mysql_dump: false 

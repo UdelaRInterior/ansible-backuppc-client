@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PGPASSWORD="{{backuppc_db_password}}" pg_dump -h localhost -p 5432 -U {{backuppc_db_user}} -Fc pad > dbdump.pgsql;
+PGPASSWORD="{{backuppc_db_password}}" pg_dump -h localhost -p 5432 -U {{backuppc_db_user}} -Fc {{backuppc_db_pgsql}} > dbdump.pgsql;
 
 tar -czvf dump.sql.tar.gz *.pgsql
  
