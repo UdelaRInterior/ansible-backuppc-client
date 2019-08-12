@@ -15,15 +15,8 @@ include_files:
 # The home dir of user backuppc which is used to perform backups (in the client and the server)
 backuppc_local_fetch_dir: /var/lib/backuppc  
 
-# Define pgsql database to backup
-backuppc_db_pgsql: ''
-
-# Three states variabale for a mysql or pgsql dump before backups. three possible values: pgsql, mysql or null
-# Mysql option defines a mysql user named backuppc with SELECT access to all bases. You must add yourself the
-# scripts pre_dump.sh and post_dump.sh hereafter, using this user.  
-# For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the
-# backuppc_db_pgsql variable 
-backuppc_db_dump: ''
+## backuppc server to configure and to fetch ssh key from
+# backuppc_server_name: backuppc.mydomain.org 
 
 # Flag to install the scripts pre_dump.sh and post_dump.sh
 backuppc_scripts: false 
@@ -55,5 +48,14 @@ backuppc_sudoer: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_su
 # If empty, only user backuppc has access to backups
 backuppc_users: ""
 
-## backuppc server to configure and to fetch ssh key from
-# backuppc_server_name: backuppc.mydomain.org 
+# Three states variabale for a mysql or pgsql dump before backups. three possible values: pgsql, mysql or null
+# Mysql option defines a mysql user named backuppc with SELECT access to all bases. You must add yourself the
+# scripts pre_dump.sh and post_dump.sh hereafter, using this user.  
+# For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the
+# backuppc_db_pgsql variable 
+backuppc_db_dump: ''
+
+# Define pgsql database to backup, as well as user and password
+backuppc_db_pgsql: ''
+backuppc_db_user: ''
+backuppc_db_password: 'put_it_in_a_vault'
