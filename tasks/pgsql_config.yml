@@ -3,7 +3,7 @@
 - name: Create directory for scripts
   file:
     path: "{{ backuppc_local_fetch_dir }}/scripts"
-    state: directory 
+    state: directory
     owner: backuppc
     group: backuppc
     mode: 0766
@@ -14,7 +14,7 @@
     dest: '{{ backuppc_local_fetch_dir }}/scripts/pre_dump.sh'
     owner: backuppc
     group: backuppc
-    mode: 0766    
+    mode: 0766
 
 - name: TEMPLATE | Add script end_backup PostgreSQL
   template:
@@ -22,4 +22,4 @@
     dest: '{{ backuppc_local_fetch_dir }}/scripts/post_dump.sh'
     owner: backuppc
     group: backuppc
-    mode: 0766    
+    mode: 0766

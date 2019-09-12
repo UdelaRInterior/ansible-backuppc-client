@@ -5,7 +5,7 @@
   command: "cat {{ backuppc_local_fetch_dir }}/.ssh/id_rsa.pub"
   register: cat
   changed_when: false
-  delegate_to: "{{backuppc_server_name}}"
+  delegate_to: "{{ backuppc_server_name }}"
 
 - name: Add SSH pub key for hosts
   sudo: yes
@@ -23,7 +23,7 @@
 - name: add to known_hosts
   known_hosts:
     path: /var/lib/backuppc/.ssh/known_hosts
-    name: "{{inventory_hostname}}"
+    name: "{{ inventory_hostname }}"
     key: "{{ ssh_known_host_results.stdout }}"
     state: present
   delegate_to: "{{ backuppc_server_name }}"
