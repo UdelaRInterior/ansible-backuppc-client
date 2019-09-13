@@ -1,6 +1,6 @@
 ---
 
-# The backuppc server we backup to. Normally installed with backuppc_server role 
+# The backuppc server we backup to. Normally installed with backuppc_server role
 backuppc_server_name: localhost
 
 backup_state: present  #present/absent, to configure or erase client in the server
@@ -13,49 +13,50 @@ include_files:
   - /root
 
 # The home dir of user backuppc which is used to perform backups (in the client and the server)
-backuppc_local_fetch_dir: /var/lib/backuppc  
+backuppc_local_fetch_dir: /var/lib/backuppc
 
 ## backuppc server to configure and to fetch ssh key from
-# backuppc_server_name: backuppc.mydomain.org 
+# backuppc_server_name: backuppc.mydomain.org
 
 # Flag to install the scripts pre_dump.sh and post_dump.sh
-backuppc_scripts: false 
+backuppc_scripts: false
 
 # Flag to give sudo rights to pre_dump.sh and post_dump.sh scripts
-backuppc_scripts_sudo: false 
+backuppc_scripts_sudo: false
 
 # The ssh command for backuppc to execute the pre_dump and post_dump scripts
-backuppc_DumpPreUserCmd: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_sudo 
+backuppc_DumpPreUserCmd: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_sudo
                        %}$sshPath -q -x -l backuppc $host sudo {{ backuppc_local_fetch_dir }}/scripts/pre_dump.sh{%
-                    else 
+                    else
                        %}$sshPath -q -x -l backuppc $host {{ backuppc_local_fetch_dir }}/scripts/pre_dump.sh{%
                     endif %}'
-backuppc_DumpPostUserCmd: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_sudo 
+backuppc_DumpPostUserCmd: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_sudo
                        %}$sshPath -q -x -l backuppc $host sudo {{ backuppc_local_fetch_dir }}/scripts/post_dump.sh{%
-                    else 
+                    else
                        %}$sshPath -q -x -l backuppc $host {{ backuppc_local_fetch_dir }}/scripts/post_dump.sh{%
                     endif %}'
 
 # The commands authorized in the client to the user backuppc. This variable _must_ start with "Cmnd_Alias BACKUPS"
 backuppc_sudoer: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_sudo
                      %}Cmnd_Alias BACKUPS = /usr/bin/rsync, {{ backuppc_local_fetch_dir }}/scripts/pre_dump.sh, {{ backuppc_local_fetch_dir }}/scripts/post_dump.sh{%
-                  else 
-                     %}Cmnd_Alias BACKUPS = /usr/bin/rsync{% 
+                  else
+                     %}Cmnd_Alias BACKUPS = /usr/bin/rsync{%
                   endif %}'
 
-# "user1,user2,user3": Users who have access to backups. 
-# they must be configured in the backuppc server 
+# "user1,user2,user3": Users who have access to backups.
+# they must be configured in the backuppc server
 # If empty, only user backuppc has access to backups
 backuppc_users: ""
 
-# Three states variabale for a mysql or pgsql dump before backups. three possible values: pgsql, mysql or null
-# Mysql option defines a mysql user named backuppc with SELECT access to all bases. You must add yourself the
-# scripts pre_dump.sh and post_dump.sh hereafter, using this user.  
-# For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the
-# backuppc_db_pgsql variable 
-backuppc_db_dump: ''
+# Three states variabale for a mysql or pgsql dump before backups.
+# Mysql option defines a mysql user named {{ backuppc_db_dump_user }} with SELECT access to all databases. You must add yourself the
+# scripts pre_dump.sh and post_dump.sh hereafter, using this user.
+# For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the backuppc_db_to_dump_name variable
+# Three possible values: pgsql, mysql or null
+backuppc_db_server_type: ''
+backuppc_db_server_root_pass: 'put_it_from_a_vault'
 
-# Define pgsql database to backup, as well as user and password
-backuppc_db_pgsql: ''
-backuppc_db_user: ''
-backuppc_db_password: 'put_it_in_a_vault'
+# Define database to backup, as well as user and password
+backuppc_db_dump_user: 'backuppc'
+backuppc_db_dump_user_pass: 'put_it_from_a_vault'
+backuppc_db_to_dump_name: 'my_app'

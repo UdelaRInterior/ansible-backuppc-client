@@ -36,7 +36,7 @@ $Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
 
 {% endif %}
 
-{% if backuppc_db_dump is defined and backuppc_db_dump == 'pgsql' %}
+{% if backuppc_db_server_type is defined and backuppc_db_server_type == 'pgsql' %}
 
 $Conf{DumpPreUserCmd} = '{{ backuppc_DumpPreUserCmd }}';
 
