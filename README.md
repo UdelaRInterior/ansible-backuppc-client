@@ -1,18 +1,18 @@
 BackupPC-Client Ansible role
 ============================
 
-This role, backuppc_client, installs and configures client hosts of a Backuppc server. It works with a [backuppc_server](https://github.com/UdelaRInterior/ansible-backuppc) role that configures the server. 
+This role, backuppc_client, installs and configures client hosts of a Backuppc server. It works with a [backuppc_server](https://github.com/UdelaRInterior/ansible-backuppc) role that configures the server.
 
 It works on Debian Stretch. It should work on Ubuntu or other Debian-based systems, but no direct support will be added (PR accepted).
 
 Description
 ------------
 
-This role configures the backups of hosts in a backuppc server.  It can perform the following actions: 
-- configure a linux user named backuppc and a backup client with this user in the backuppc server, 
-- configure a pre_dump and a post_dump scripts with eventual sudo rights. 
+This role configures the backups of hosts in a backuppc server.  It can perform the following actions:
+- configure a linux user named backuppc and a backup client with this user in the backuppc server,
+- configure a pre_dump and a post_dump scripts with eventual sudo rights.
 - configure a mysql user named backuppc with SELECT right on all bases or:
-- configure a script that will dump an identified postgresql database. 
+- configure a script that will dump an identified postgresql database.
 
 
 Requirements
@@ -32,23 +32,23 @@ Role Variables
 
 ### Client vars
 
-Each client configuration overrides global configuration. Thew following variables can be defined: 
+Each client configuration overrides global configuration. Thew following variables can be defined:
 
-- `state`: absent or present (default: present). If present, configures the backups of the client in the server, else eliminates the configuration 
+- `state`: absent or present (default: present). If present, configures the backups of the client in the server, else eliminates the configuration
 - `include_files:`: default files (directories) list of folders in the client to backup
 - `exclude_files:`: default files (directories) list of folders to exclude in backups
-- `backuppc_local_fetch_dir`:  home directory of user backuppc which is used to perform backups (in client and server) 
+- `backuppc_local_fetch_dir`:  home directory of user backuppc which is used to perform backups (in client and server)
 - `backuppc_server_name`: domain name of the BackupPC server that performs the backup and where the ssh key is fetched.
-- `backuppc_users`: Users with access to the backuppc web interface who manage the backup ("user1,user2"). They must be configured in the backuppc server. 
+- `backuppc_users`: Users with access to the backuppc web interface who manage the backup ("user1,user2"). They must be configured in the backuppc server.
 
 - `backuppc_scripts`: Scripts true/false flag. If true installs the scripts to launch before and after the files dump to the server. This scripts _must_ be called **`pre_dump.sh`** and **`post_dump.sh`** and should be placed in the folder `host_vars/<client_host>/files/backuppc/`.
 - `backuppc_scripts_sudo`: true/false flag to give sudo rights to pre_dump.sh and post_dump.sh scripts
 - `backuppc_DumpPreUserCmd` and `backuppc_DumpPostUserCmd`: ssh commands for backuppc to execute the pre_dump and post_dump scripts. These variables are pre-defined according to previous flags, but can be overwritten.
-- `backuppc_sudoer` the commands authorized with sudo for backuppc user. This variable is pre-defined according to previous flags, but can be overwritten. 
+- `backuppc_sudoer` the commands authorized with sudo for backuppc user. This variable is pre-defined according to previous flags, but can be overwritten.
 
-- `backuppc_db_dump`:  Three states variabale for a mysql or pgsql dump before backups. three possible values: pgsql, mysql or null. Mysql option defines a mysql user named backuppc with SELECT access to all bases. You must add yourself the scripts pre_dump.sh and post_dump.sh hereafter, using this user. For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the `backuppc_db_pgsql` variable
+- `backuppc_db_server_type`:  Three states variabale for a mysql or pgsql dump before backups. three possible values: pgsql, mysql or null. Mysql option defines a mysql user named backuppc with SELECT access to all bases. You must add yourself the scripts pre_dump.sh and post_dump.sh hereafter, using this user. For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the `backuppc_db_to_dump_name` variable
 
-- `backuppc_db_pgsql`, `backuppc_db_user` and `backuppc_db_password` define the pgsql database to backup, as well as user and password to use in the script's template. 
+- `backuppc_db_to_dump_name`, `backuppc_db_dump_user` and `backuppc_db_dump_user_pass` define the pgsql database to backup, as well as user and password to use in the script's template.
 
 - `xfermethod`: (O) transfer method (rsync as default)
 - `more`: (O) hash with specific key/value (usefull for custom directives)
@@ -56,12 +56,12 @@ Each client configuration overrides global configuration. Thew following variabl
 
 ### Mysql script examples
 
-For a Mysql backup, to dump all databases before the files dump you can use the following scripts, that will take advantage of the mysql backuppc user configured by the role: 
+For a Mysql backup, to dump all databases before the files dump you can use the following scripts, that will take advantage of the mysql backuppc user configured by the role:
 
 - `pre_dump.sh`
 ```bash
 #!/bin/bash
-for DataB in `mysql -e "show databases" | grep -v Database`; do mysqldump --single-transaction $DataB > "$DataB.sql"; done 
+for DataB in `mysql -e "show databases" | grep -v Database`; do mysqldump --single-transaction $DataB > "$DataB.sql"; done
 tar -czvf dump.sql.tar.gz *.sql
 rm *.sql
 ```
