@@ -1,21 +1,21 @@
 ---
-##  Configure backuppc mysql user with SELECT privileges on all bases 
-##  backuppc user access is configured without explicit password provision 
+##  Configure backuppc mysql user with SELECT privileges on all bases
+##  backuppc user access is configured without explicit password provision
 
-## This should be the right module to use in the next tasl, but it doesn't work. 
+## This should be the right module to use in the next tasl, but it doesn't work.
 # - name: Chek if mysqld is present
 #  package_facts:
 #    manager: "apt"
 
 - name: Check if Mysql service is present and running
-  service: 
+  service:
     name: mysqld
     state: started
   ignore_errors: yes
   register: mysql_state
 
 - name: stop playbook if mysqld absent
-  fail: 
+  fail:
     msg: There is no mysqld running in the host to backup
   when: mysql_state.failed
 
@@ -27,17 +27,17 @@
 - name: Set backuppc mysql user privileges
   mysql_user:
     login_user: root
-    login_password: "{{ vault_root_pass_mysql }}"
-    user: "{{ backuppc_mysql_user }}"
-    password: "{{ vault_backuppc_pass_mysql }}"
+    login_password: "{{ backuppc_db_server_root_pass }}"
+    user: "{{ backuppc_db_dump_user }}"
+    password: "{{ backuppc_db_dump_user_pass }}"
     state: present
     priv: '*.*:PROCESS,SUPER,SELECT'
+    config_file: "{{ mysql_credential_file[(ansible_os_family|lower)] | default(omit) }}"
 
-- name: TEMPLATE | Add access to mysql 
-  template: 
+- name: TEMPLATE | Add access to mysql
+  template:
     src: etc/mysql/backuppc.cnf.j2
     dest: /etc/mysql/conf.d/backuppc.cnf
     owner: root
     group: root
     mode: 0644
-

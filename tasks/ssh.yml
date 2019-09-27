@@ -1,6 +1,7 @@
 ---
 ## Configure backuppc user ssh server key in the client
 
+<<<<<<< HEAD
 - name: install server ssh key in client
   block: 
   - name: COMMAND | Extract SSH backuppc server pub key
@@ -8,6 +9,13 @@
     register: cat
     changed_when: false
     delegate_to: "{{ backuppc_server_name }}"
+=======
+- name: COMMAND | Show SSH pub key
+  command: "cat {{ backuppc_local_fetch_dir }}/.ssh/id_rsa.pub"
+  register: cat
+  changed_when: false
+  delegate_to: "{{ backuppc_server_name }}"
+>>>>>>> 69b8a16f74d95c1bc8d4210d9c8730f686decaa2
 
   - name: Add SSH server pub key to client
     sudo: yes
@@ -26,7 +34,11 @@
 
 - name: add client key to known_hosts in server
   known_hosts:
+<<<<<<< HEAD
     path: '{{ backuppc_server_home }}/.ssh/known_hosts'
+=======
+    path: /var/lib/backuppc/.ssh/known_hosts
+>>>>>>> 69b8a16f74d95c1bc8d4210d9c8730f686decaa2
     name: "{{ inventory_hostname }}"
     key: "{{ ssh_known_host_results.stdout }}"
     state: present

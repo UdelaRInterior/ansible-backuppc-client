@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: backuppc_client
   author: Emilien Mantel, Víctor Torterola, Daniel Viñar
   description: Install and manage BackupPC Client
   company: Universidad de la República (UdelaR)
@@ -19,4 +20,3 @@ galaxy_info:
   - system
   - web
 dependencies: []
-
