@@ -5,6 +5,8 @@ backuppc_server_name: localhost
 
 backup_state: present  #present/absent, to configure or erase client in the server
 
+backuppc_client: true # configure things in the client host 
+
 # the folders that will be dumped to the backup
 include_files:
   - /etc
@@ -12,8 +14,10 @@ include_files:
   - /home
   - /root
 
-# The home dir of user backuppc which is used to perform backups (in the client and the server)
+# The home dir of user backuppc which is used to perform backups in the client 
 backuppc_local_fetch_dir: /var/lib/backuppc  
+# The home dir of user backuppc which is used to perform backups in the server 
+backuppc_server_home: /var/lib/backuppc
 
 ## backuppc server to configure and to fetch ssh key from
 # backuppc_server_name: backuppc.mydomain.org 

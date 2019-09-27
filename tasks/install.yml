@@ -14,13 +14,13 @@
 - name: Create user
   user:
     name: backuppc
-    home: /var/lib/backuppc
+    home: '{{ backuppc_local_fetch_dir }}'
     shell: /bin/bash
     groups: backuppc
 
 - name: Create dir
   file:
-    path: /var/lib/backuppc/.ssh
+    path: '{{ backuppc_local_fetch_dir }}/.ssh'
     state: directory
     owner: backuppc
     group: backuppc
