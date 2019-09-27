@@ -6,19 +6,11 @@
 
 - name: INCLUDE | config user mysql
   include_tasks: mysql_config.yml
-<<<<<<< HEAD
   when: backuppc_client and backuppc_db_dump == 'mysql'
 
 - name: INCLUDE | config PostgreSQL
   include_tasks: pgsql_config.yml
   when: backuppc_client and backuppc_db_dump == 'pgsql'
-=======
-  when: backuppc_db_server_type == 'mysql'
-
-- name: INCLUDE | config PostgreSQL
-  include_tasks: pgsql_config.yml
-  when: backuppc_db_server_type == 'pgsql'
->>>>>>> 69b8a16f74d95c1bc8d4210d9c8730f686decaa2
 
 - name: INCLUDE | add file bash
   include_tasks: copy_scripts.yml

@@ -37,13 +37,9 @@ Each client configuration overrides global configuration. Thew following variabl
 - `state`: absent or present (default: present). If present, configures the backups of the client in the server, else eliminates the configuration
 - `include_files:`: default files (directories) list of folders in the client to backup
 - `exclude_files:`: default files (directories) list of folders to exclude in backups
-<<<<<<< HEAD
 - `backuppc_client`: if set to `false` (default value `true`) the client host is not configured
 - `backuppc_local_fetch_dir`:  home directory of user backuppc which is used to perform backups in client 
 - `backuppc_server_home`:  home directory of user backuppc which is used to perform backups in the server
-=======
-- `backuppc_local_fetch_dir`:  home directory of user backuppc which is used to perform backups (in client and server)
->>>>>>> 69b8a16f74d95c1bc8d4210d9c8730f686decaa2
 - `backuppc_server_name`: domain name of the BackupPC server that performs the backup and where the ssh key is fetched.
 - `backuppc_users`: Users with access to the backuppc web interface who manage the backup ("user1,user2"). They must be configured in the backuppc server.
 

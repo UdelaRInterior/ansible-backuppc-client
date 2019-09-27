@@ -14,15 +14,10 @@ include_files:
   - /home
   - /root
 
-<<<<<<< HEAD
 # The home dir of user backuppc which is used to perform backups in the client 
 backuppc_local_fetch_dir: /var/lib/backuppc  
 # The home dir of user backuppc which is used to perform backups in the server 
 backuppc_server_home: /var/lib/backuppc
-=======
-# The home dir of user backuppc which is used to perform backups (in the client and the server)
-backuppc_local_fetch_dir: /var/lib/backuppc
->>>>>>> 69b8a16f74d95c1bc8d4210d9c8730f686decaa2
 
 ## backuppc server to configure and to fetch ssh key from
 # backuppc_server_name: backuppc.mydomain.org
