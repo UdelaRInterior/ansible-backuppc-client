@@ -46,8 +46,8 @@ $Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
 
 {% if more is defined %}
 # More options...
-{% for key, value in more.iteritems() %}
-{% if value is string %}
+{% for key, value in more.items() %}
+{% if value is string or value is number %}
 $Conf{{ '{' }}{{ key }}{{ '}' }} = '{{ value }}';
 {% else %}
 $Conf{{ '{' }}{{ key }}{{ '}' }} = [
