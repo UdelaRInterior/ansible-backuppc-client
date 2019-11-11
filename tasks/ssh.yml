@@ -10,7 +10,6 @@
     delegate_to: "{{ backuppc_server_name }}"
 
   - name: Add SSH server pub key to client
-    sudo: yes
     authorized_key:
       user: backuppc
       state: present
