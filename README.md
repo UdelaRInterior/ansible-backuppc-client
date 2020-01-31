@@ -1,17 +1,17 @@
 BackupPC-Client Ansible role
 ============================
 
-This role, backuppc_client, installs and configures client hosts of a Backuppc server. It works with a [backuppc_server](https://github.com/UdelaRInterior/ansible-backuppc) role that configures the server.
+This role, backuppc_client, installs and configures client hosts of a Backuppc server. It works with a [backuppc_server](https://galaxy.ansible.com/udelarinterior/backuppc_client) role that configures the server.
 
-It works on Debian Stretch. It should work on Ubuntu or other Debian-based systems, but no direct support will be added (PR accepted).
+It works on Debian Stretch. It should work on Ubuntu or other Debian-based systems (PR accepted).
 
 Description
 ------------
 
-This role configures the backups of hosts in a backuppc server.  It can perform the following actions:
+This role configures the backups of hosts in a [BackupPC](https://backuppc.github.io/backuppc/) server.  It can perform the following actions:
 - configure a linux user named backuppc and a backup client with this user in the backuppc server,
 - configure a pre_dump and a post_dump scripts with eventual sudo rights.
-- configure a mysql user named backuppc with SELECT right on all bases or:
+- configure a mysql user named backuppc with SELECT right on all bases.
 - configure a script that will dump an identified postgresql database.
 
 
@@ -25,7 +25,7 @@ Note
 
 At this time, this role only manages backups via rsync (+ ssh) method.
 
-This role and backuppc_server role are based on [hanxhx/backuppc](https://galaxy.ansible.com/hanxhx/backuppc) role
+This role and backuppc_server role are based on [hanxhx/backuppc](https://galaxy.ansible.com/hanxhx/backuppc) role.
 
 Role Variables
 --------------
@@ -34,7 +34,7 @@ Role Variables
 
 Each client configuration overrides global configuration. Thew following variables can be defined:
 
-- `state`: absent or present (default: present). If present, configures the backups of the client in the server, else eliminates the configuration
+- `backup_state`: absent or present (default: present). If present, configures the backups of the client in the server, else eliminates the configuration
 - `include_files:`: default files (directories) list of folders in the client to backup
 - `exclude_files:`: default files (directories) list of folders to exclude in backups
 - `backuppc_client`: if set to `false` (default value `true`) the client host is not configured
@@ -81,7 +81,7 @@ This role downloads backuppc SSH public key of backuppc user in the backuppc ser
 Dependencies
 ------------
 
-Previously install backuppc-server https://galaxy.ansible.com/hanxhx/backuppc
+Previously install a BackupPC serrver, eventually with  [ansibble-backuppc](https://galaxy.ansible.com/udelarinterior/backuppc_client) server role. 
 
 Example Playbook
 ----------------
