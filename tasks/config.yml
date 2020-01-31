@@ -13,7 +13,9 @@
   notify: restart backuppc
 
 - name: FILE | Delete config if needed
-  file: path='/etc/backuppc/{{ inventory_hostname }}.pl' state=absent
+  file: 
+    path: '/etc/backuppc/{{ inventory_hostname }}.pl'
+    state: absent
   delegate_to: "{{ backuppc_server_name }}"
   when: backup_state is defined and backup_state == 'absent'
   notify: restart backuppc

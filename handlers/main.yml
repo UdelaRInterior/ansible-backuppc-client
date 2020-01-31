@@ -1,5 +1,8 @@
 ---
 
 - name: restart backuppc
-  action: service name=backuppc state=restarted enabled=yes
+  service: 
+    name: backuppc
+    state: restarted
+    enabled: yes
   delegate_to: "{{ backuppc_server_name }}"

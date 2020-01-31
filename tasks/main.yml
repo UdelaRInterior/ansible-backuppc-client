@@ -1,23 +1,23 @@
 ---
 
 - name: INCLUDE | install rsync and backuppc user
-  include_tasks: install.yml
+  import_tasks: install.yml
   when: backuppc_client
 
 - name: INCLUDE | config user mysql
-  include_tasks: mysql_config.yml
+  import_tasks: mysql_config.yml
   when: backuppc_client and backuppc_db_server_type == 'mysql'
 
 - name: INCLUDE | config PostgreSQL
-  include_tasks: pgsql_config.yml
+  import_tasks: pgsql_config.yml
   when: backuppc_client and backuppc_db_server_type == 'pgsql'
 
 - name: INCLUDE | add file bash
-  include_tasks: copy_scripts.yml
+  import_tasks: copy_scripts.yml
   when: backuppc_client and backuppc_scripts
 
 - name: INCLUDE | Backuppc server configuration
-  include: config.yml
+  import_tasks: config.yml
 
 - name: INCLUDE | SSH to server related configuration
-  include: ssh.yml
+  import_tasks: ssh.yml

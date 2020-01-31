@@ -11,10 +11,9 @@
 
   - name: Add SSH server pub key to client
     authorized_key:
-      user: backuppc
+      user: "{{ backuppc_client_user }}"
       state: present
       key: "{{ cat.stdout }}"
-    delegate_to: "{{ inventory_hostname }}"
   when: backuppc_client
 
 - name: ssh public key of client

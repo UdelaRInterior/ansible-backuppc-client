@@ -6,8 +6,8 @@
   file:
     path: "{{ backuppc_local_fetch_dir }}/scripts"
     state: directory
-    owner: backuppc
-    group: backuppc
+    owner: "{{ backuppc_client_user }}"
+    group: "{{ backuppc_client_group }}"
     mode: 0766
 
 - name: Copy pre_dump backup script
@@ -15,8 +15,8 @@
   copy:
     src: "{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/files/backuppc/pre_dump.sh"
     dest: "{{ backuppc_local_fetch_dir }}/scripts/pre_dump.sh"
-    owner: backuppc
-    group: backuppc
+    owner: "{{ backuppc_client_user }}"
+    group: "{{ backuppc_client_group }}"
     mode: 0766
 
 - name: Copy post_dump backup script
@@ -24,6 +24,6 @@
   copy:
     src: "{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/files/backuppc/post_dump.sh"
     dest: "{{ backuppc_local_fetch_dir }}/scripts/post_dump.sh"
-    owner: backuppc
-    group: backuppc
+    owner: "{{ backuppc_client_user }}"
+    group: "{{ backuppc_client_group }}"
     mode: 0766

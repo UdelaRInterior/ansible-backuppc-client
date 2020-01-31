@@ -6,24 +6,24 @@
     name: rsync
     state: present
 
-- name: Make sure we have a 'backuppc' group
+- name: Create the 'backuppc_client_group' group in the client
   group:
-    name: backuppc
+    name: "{{ backuppc_client_group }}"
     state: present
 
-- name: Create user
+- name: Create the 'backuppc_client_user' in the client
   user:
-    name: backuppc
+    name: "{{ backuppc_client_user }}"
     home: '{{ backuppc_local_fetch_dir }}'
     shell: /bin/bash
-    groups: backuppc
+    groups: "{{ backuppc_client_group }}"
 
-- name: Create dir
+- name: Create the user's ssh data in the client
   file:
     path: '{{ backuppc_local_fetch_dir }}/.ssh'
     state: directory
-    owner: backuppc
-    group: backuppc
+    owner: "{{ backuppc_client_user }}"
+    group: "{{ backuppc_client_group }}"
     mode: 0700
 
 - name: Define cmnd_alias to allow 'backuppc' privileges
@@ -38,8 +38,8 @@
   lineinfile:
     dest: /etc/sudoers
     state: present
-    regexp: '^%backuppc'
-    line: '%backuppc ALL=(ALL) NOPASSWD: BACKUPS'
+    regexp: '^%{{ backuppc_client_group }}'
+    line: '%{{ backuppc_client_group }} ALL=(ALL) NOPASSWD: BACKUPS'
     validate: 'visudo -cf %s'
 
 ...

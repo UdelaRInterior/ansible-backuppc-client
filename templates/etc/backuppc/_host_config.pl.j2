@@ -10,7 +10,6 @@ $Conf{BackupFilesOnly} = {'*' => [
 {% endfor %}
 	]
 };
-
 {% endif %}
 
 {% if exclude_files is defined %}
@@ -27,6 +26,9 @@ $Conf{BackupFilesExclude} = {
 $Conf{XferMethod} = '{{ xfermethod | default("rsync") }}';
 
 $Conf{ClientCharsetLegacy} = 'utf-8';
+
+$Conf{RsyncClientCmd} = '{{ backuppc_RsyncClientCmd }}';
+$Conf{RsyncClientRestoreCmd} = '{{ backuppc_RsyncClientRestoreCmd }}';
 
 {% if backuppc_scripts is defined and backuppc_scripts %}
 
