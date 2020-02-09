@@ -1,5 +1,9 @@
 # Change log of [ansible-backuppc-client](https://github.com/UdelaRInterior/ansible-backuppc-client) role
 
+## [v1.2.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v1.2.0) 
+
+* The unix user used by the server to access the client host is now defined as a variable, as well as it's group 
+
 ## [v1.1.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v1.1.0) 
 
 * Possiblity to configure only the client access to the server, not the host client itself. New variables: 
