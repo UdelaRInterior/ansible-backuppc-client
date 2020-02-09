@@ -6,12 +6,12 @@
     name: rsync
     state: present
 
-- name: Create the 'backuppc_client_group' group in the client
+- name: Create unix group 'backuppc_client_group' in the client
   group:
     name: "{{ backuppc_client_group }}"
     state: present
 
-- name: Create the 'backuppc_client_user' in the client
+- name: Create unix user 'backuppc_client_user' in the client
   user:
     name: "{{ backuppc_client_user }}"
     home: '{{ backuppc_local_fetch_dir }}'

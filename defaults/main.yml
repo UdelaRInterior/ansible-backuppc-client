@@ -1,9 +1,11 @@
 ---
+##  Variables of role backuppc_client to configure a host to backup in a BackupPC server
 
-# The backuppc server we backup to. Normally installed with backuppc_server role
+# The backuppc server we backup to configuring it and fetching ssh key from. Normally installed with backuppc_server role
 backuppc_server_name: localhost
+# backuppc_server_name: backuppc.mydomain.org
 
-backup_state: present  #present/absent, to configure or erase client host configiguration in the server
+backup_state: present  #present/absent, to configure or erase client host configuration in the server
 
 # Flag that defines if the client host is configured or not 
 backuppc_client: true
@@ -22,9 +24,6 @@ backuppc_client_group: backuppc
 backuppc_local_fetch_dir: /var/lib/backuppc
 # The home dir of user backuppc which is used to perform backups in the server 
 backuppc_server_home: /var/lib/backuppc
-
-## backuppc server to configure and to fetch ssh key from (this variable is needed!!!)
-# backuppc_server_name: backuppc.mydomain.org
 
 backuppc_RsyncClientCmd: '$sshPath -x -q -l {{ backuppc_client_user }} $host sudo $rsyncPath $argList+'
 backuppc_RsyncClientRestoreCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host sudo $rsyncPath $argList+'
