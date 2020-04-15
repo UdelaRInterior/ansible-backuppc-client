@@ -1,0 +1,7 @@
+---
+# Variables for role backuppc_client
+
+mysql_credential_file:
+  debian: '/etc/mysql/debian.cnf'
+
+...

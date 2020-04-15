@@ -1,5 +1,11 @@
 # Change log of [ansible-backuppc-client](https://github.com/UdelaRInterior/ansible-backuppc-client) role
 
+## [v1.3.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v1.3.0) 
+
+* Change the place of mysql credentials, in order to affect only bacluppc user, not root
+* now accepts mysql without root password defined, as is now the default installation in debian  
+* now the role erases eventual old keys of the backed up host in the known_host of backuppc server 
+
 ## [v1.2.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v1.2.0) 
 
 * The unix user used by the server to access the client host is now defined as a variable, as well as it's group 

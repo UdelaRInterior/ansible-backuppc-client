@@ -16,16 +16,55 @@
       key: "{{ cat.stdout }}"
   when: backuppc_client
 
-- name: ssh public key of client
-  shell: "ssh-keyscan {{ inventory_hostname }}"
-  register: ssh_known_host_results
-  ignore_errors: yes
-  delegate_to: "{{ backuppc_server_name }}"
+- name: Manage known_hosts keys in backup server
+  block: 
+  - name: Remove old host domain ssh keys
+    known_hosts:
+      path: '{{ backuppc_server_home }}/.ssh/known_hosts'
+      name: "{{ inventory_hostname }}"
+      state: absent
 
-- name: add client key to known_hosts in server
-  known_hosts:
-    path: '{{ backuppc_server_home }}/.ssh/known_hosts'
-    name: "{{ inventory_hostname }}"
-    key: "{{ ssh_known_host_results.stdout }}"
-    state: present
+  - name: Remove old host IPv4 ssh keys
+    known_hosts:
+      path: '{{ backuppc_server_home }}/.ssh/known_hosts'
+      name: "{{ IPv4 }}"
+      state: absent
+    loop: "{{ ansible_facts.all_ipv4_addresses }}"
+    loop_control:
+      loop_var: IPv4
+
+  - name: Remove old host IPv6 ssh keys
+    known_hosts:
+      path: '{{ backuppc_server_home }}/.ssh/known_hosts'
+      name: "{{ IPv6 }}"
+      state: absent
+    loop: "{{ ansible_facts.all_ipv6_addresses }}"
+    loop_control:
+      loop_var: IPv6
+
+  - name: ssh public key of client
+    shell: "ssh-keyscan {{ inventory_hostname }}"
+    register: ssh_known_host_results
+    ignore_errors: yes
+
+  - name: add client key to known_hosts in server
+    known_hosts:
+      path: '{{ backuppc_server_home }}/.ssh/known_hosts'
+      name: "{{ inventory_hostname }}"
+      key: "{{ ssh_known_host_results.stdout }}"
+      state: present
+
+  - name: Fix the ownership of the known_hosts file
+    file:
+      path: '{{ backuppc_server_home }}/.ssh/{{ file }}'
+      owner: "{{ backuppc_client_user }}"
+      group: "{{ backuppc_client_group }}"
+      mode: '600'
+    loop:
+    - known_hosts
+    - known_hosts.old
+    loop_control:
+      loop_var: file
+    
   delegate_to: "{{ backuppc_server_name }}"
+  # become: "{{ backuppc_client_user }}"

@@ -50,9 +50,18 @@ Each client configuration overrides global configuration. Thew following variabl
 - `backuppc_DumpPreUserCmd` and `backuppc_DumpPostUserCmd`: ssh commands for backuppc to execute the pre_dump and post_dump scripts. These variables are pre-defined according to previous flags, but can be overwritten.
 - `backuppc_sudoer` the commands authorized with sudo for backuppc user. This variable is pre-defined according to previous flags, but can be overwritten.
 
-- `backuppc_db_server_type`:  Three states variabale for a mysql or pgsql dump before backups. three possible values: pgsql, mysql or null. Mysql option defines a mysql user named backuppc with SELECT access to all bases. You must add yourself the scripts pre_dump.sh and post_dump.sh hereafter, using this user. For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the `backuppc_db_to_dump_name` variable
+- `backuppc_db_server_type`:  Three states variabale that defines eventual mysql or pgsql dump before backups. The three possible values are: pgsql, mysql or null. Behaviour of scripts and db backups are different for mysql and pgsql. Particularly, for MySQL you must add yourself the scripts `pre_dump.sh` and `post_dump.sh` that do the job of dumping databases, while for PostgreSQL these scripts are built form templates (and they dump only a database). For PostgreSQL rights on the database must be previously defined, while contrarily MySQL task assign database access rights to a given user.   
+- For PostgreSQL, variables are:
+  - `backuppc_db_to_dump_name` defines the pgsql database to backup, 
+  - `backuppc_db_dump_user` defines the pgsql user to access the database,
+  - `backuppc_db_dump_user_pass` is the password of the previous users. 
+  Passwords setup and privileges of this user on the database must be set elsewhere in the playbook. 
+- For Mysql, variables are:
+  - `backuppc_db_server_root_pass` must be set to the appropriate value if the mysql `root` user has a password defined.  By default, the variable is undefined. It must be noticed that, in recent mysql/mariadb installation, at least in debian, mysql instalation doesn't ask for and doesn't ramdomly generate a root password. Debian maintainance is no longer done with a specific user and password, but with user root through a unix sock and not a tcp authenticated sock. If the variable remains undefined, mysql tasks will be performed using debian maintenance configuration. 
+  - `backuppc_db_dump_user` and `backuppc_db_dump_user_pass` are the name of the mysql user and the correspondent passwword, that will be used when calling a mysql command from a `pre_dump.sh` or `post_dump.sh` script. This user will be given SELECT access to all bases, and will be configured ad the mysql user and password for the linux user that executes the backup scripts. 
+ option defines a mysql user named backuppc with .  using this user. For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the `backuppc_db_to_dump_name` variable
 
-- `backuppc_db_to_dump_name`, `backuppc_db_dump_user` and `backuppc_db_dump_user_pass` define the pgsql database to backup, as well as user and password to use in the script's template.
+- ,  and  , as well as user and password to use in the script's template.
 
 - `xfermethod`: (O) transfer method (rsync as default)
 - `more`: (O) hash with specific key/value (usefull for custom directives)
@@ -95,7 +104,7 @@ You should look at [defaults/main.yml](defaults/main.yml).
 License
 -------
 
-GPLv2
+GPLv3
 
 Author Information
 ------------------

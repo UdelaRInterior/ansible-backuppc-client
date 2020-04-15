@@ -64,9 +64,12 @@ backuppc_users: ""
 # For Pgsql option, the scripts are constructed from templates.  The database to backup is indicated in the backuppc_db_to_dump_name variable
 # Three possible values: pgsql, mysql or null
 backuppc_db_server_type: ''
-backuppc_db_server_root_pass: 'put_it_from_a_vault'
+
+# Define this variable if your root mysql password is defined 
+# (in present default debian mysql install, there is no root password defined)
+# backuppc_db_server_root_pass: 'put_it_from_a_vault'
 
 # Define database to backup, as well as user and password
-backuppc_db_dump_user: 'backuppc'
+backuppc_db_dump_user: "{{ backuppc_client_user }}"
 backuppc_db_dump_user_pass: 'put_it_from_a_vault'
 backuppc_db_to_dump_name: 'my_app'
