@@ -54,17 +54,5 @@
       key: "{{ ssh_known_host_results.stdout }}"
       state: present
 
-  - name: Fix the ownership of the known_hosts file
-    file:
-      path: '{{ backuppc_server_home }}/.ssh/{{ file }}'
-      owner: "{{ backuppc_client_user }}"
-      group: "{{ backuppc_client_group }}"
-      mode: '600'
-    loop:
-    - known_hosts
-    - known_hosts.old
-    loop_control:
-      loop_var: file
-    
   delegate_to: "{{ backuppc_server_name }}"
-  # become: "{{ backuppc_client_user }}"
+  become_user: "{{ backuppc_client_user }}"
