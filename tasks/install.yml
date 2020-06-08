@@ -1,32 +1,32 @@
 ---
 # Configure the backuppc user in the client host to backup
 
-- name: Instalar Rsync
+- name: APT |Instalar Rsync
   apt:
     name: rsync
     state: present
 
-- name: Create unix group 'backuppc_client_group' in the client
+- name: GROUP | Create unix group 'backuppc_client_group' in the client
   group:
     name: "{{ backuppc_client_group }}"
     state: present
 
-- name: Create unix user 'backuppc_client_user' in the client
+- name: USER | Create unix user 'backuppc_client_user' in the client
   user:
     name: "{{ backuppc_client_user }}"
-    home: '{{ backuppc_local_fetch_dir }}'
+    home: '{{ backuppc_client_home }}'
     shell: /bin/bash
     groups: "{{ backuppc_client_group }}"
 
-- name: Create the user's ssh data in the client
+- name: FILE |  Create the user's ssh data in the client
   file:
-    path: '{{ backuppc_local_fetch_dir }}/.ssh'
+    path: '{{ backuppc_client_home }}/.ssh'
     state: directory
     owner: "{{ backuppc_client_user }}"
     group: "{{ backuppc_client_group }}"
     mode: 0700
 
-- name: Define cmnd_alias to allow 'backuppc' privileges
+- name: LINEINFILE | Define cmnd_alias to allow 'backuppc' privileges
   lineinfile:
     dest: /etc/sudoers
     state: present
@@ -34,7 +34,7 @@
     line: '{{ backuppc_sudoer }}'
     validate: 'visudo -cf %s'
 
-- name: Allow 'backuppc' group to have passwordless sudo
+- name: LINEINFILE | Allow 'backuppc' group to have passwordless sudo
   lineinfile:
     dest: /etc/sudoers
     state: present

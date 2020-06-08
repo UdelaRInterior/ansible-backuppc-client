@@ -1,29 +1,34 @@
 ---
 ## Configure the client in the backuppc server
 
-- name: TEMPLATE | Put host specific config on BackupPC server
-  template:
-    src: etc/backuppc/_host_config.pl.j2
-    dest: '/etc/backuppc/{{ inventory_hostname }}.pl'
-    owner: backuppc
-    group: www-data
-    mode: 0644
-  delegate_to: "{{ backuppc_server_name }}"
-  when: backup_state is not defined or backup_state == 'present'
-  notify: restart backuppc
+- name: Configure the client backups in BackupPC server
 
-- name: FILE | Delete config if needed
-  file: 
-    path: '/etc/backuppc/{{ inventory_hostname }}.pl'
-    state: absent
-  delegate_to: "{{ backuppc_server_name }}"
-  when: backup_state is defined and backup_state == 'absent'
-  notify: restart backuppc
+  block:
+  
+  - name: TEMPLATE | Put host specific config on BackupPC server
+    template:
+      src: etc/backuppc/_host_config.pl.j2
+      dest: '{{ backuppc_server_config_dir }}/{{ inventory_hostname }}.pl'
+      owner: '{{ backuppc_server_user }}'
+      group: '{{ backuppc_server_group }}'
+      mode: 0644
+    when: backuppc_backup_state == 'present'
+    notify: backuppc_client - restart backuppc
 
-- name: LINEINFILE | Add host to BackupPC server
-  lineinfile:
-    dest: /etc/backuppc/hosts
-    line: "{{ inventory_hostname }}\t0\tbackuppc\t{{ backuppc_users }}"
-    regexp: "^{{ inventory_hostname }}"
-    state: "{{ backup_state if backup_state is defined else 'present' }}"
-  delegate_to: "{{ backuppc_server_name }}"
+  - name: FILE | Delete config if needed
+    file: 
+      path: '{{ backuppc_server_config_dir }}/{{ inventory_hostname }}.pl'
+      state: absent
+    when: backuppc_backup_state == 'absent'
+    notify: backuppc_client - restart backuppc
+
+  - name: LINEINFILE | Add host to BackupPC server
+    lineinfile:
+      dest: '{{ backuppc_server_config_dir }}/hosts'
+      line: "{{ inventory_hostname }}\t0\t{{ backuppc_server_web_main_user }}\t{{ backuppc_server_web_other_users }}"
+      regexp: '^{{ inventory_hostname }}'
+      state: '{{ backuppc_backup_state }}'
+  
+  delegate_to: '{{ backuppc_server_name }}'
+
+...

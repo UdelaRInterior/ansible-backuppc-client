@@ -7,24 +7,24 @@
 #  package_facts:
 #    manager: "apt"
 
-- name: Check if Mysql service is present and running
+- name: SERVICE | Check if Mysql service is present and running
   service:
     name: mysqld
     state: started
   ignore_errors: yes
   register: mysql_state
 
-- name: stop playbook if mysqld absent
+- name: FAIL | stop playbook if mysqld absent
   fail:
     msg: There is no mysqld running in the host to backup
   when: mysql_state.failed
 
-- name: Install MySQL-Python module
+- name: APT | Install MySQL-Python module
   apt:
     name: python-mysqldb
     state: present
 
-- name: Set backuppc mysql user privileges
+- name: MYSQL_USER | Set backuppc mysql user privileges
   mysql_user:
     login_user: "{{ 'root' if backuppc_db_server_root_pass is defined else omit }}"
     login_password: "{{ backuppc_db_server_root_pass | default( omit ) }}"
@@ -32,13 +32,15 @@
     password: "{{ backuppc_db_dump_user_pass }}"
     state: present
     priv: '*.*:PROCESS,SUPER,SELECT'  
-    config_file: "{{ omit if backuppc_db_server_root_pass is defined else mysql_credential_file[(ansible_os_family|lower)] | default(omit) }}"
+    config_file: "{{ omit if backuppc_db_server_root_pass is defined else backuppc_mysql_credentials_file[(ansible_os_family|lower)] | default(omit) }}"
 
 
 - name: TEMPLATE | Add access to mysql
   template:
     src: etc/mysql/.my.cnf.j2
-    dest: "{{ backuppc_local_fetch_dir }}/.my.cnf"
+    dest: "{{ backuppc_client_home }}/.my.cnf"
     owner: "{{ backuppc_client_user }}"
     group: "{{ backuppc_client_group }}"
     mode: 0644
+
+...

@@ -1,8 +1,16 @@
 # Change log of [ansible-backuppc-client](https://github.com/UdelaRInterior/ansible-backuppc-client) role
 
+## [v2.0.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v2.0.0) 
+
+* Managment of `backuppc_rsync_share_names` configuration for clients, in order to achieve backups with several rsync
+* Standardisation of API: all variables are in namespace `backuppc_`
+* Backwards variables' compatibility and default values. Can change in future versions, adopt new API!
+* Some new parameters, previously hard coded
+* Documentation completion and reorganisation
+
 ## [v1.3.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v1.3.0) 
 
-* Change the place of mysql credentials, in order to affect only bacluppc user, not root
+* Change the place of mysql credentials, in order to affect only backuppc user, not root
 * now accepts mysql without root password defined, as is now the default installation in debian  
 * now the role erases eventual old keys of the backed up host in the known_host of backuppc server 
 

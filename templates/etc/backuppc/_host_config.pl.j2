@@ -2,20 +2,29 @@
 # {{ ansible_managed }}
 #
 
-{% if include_files is defined %}
+{% if backuppc_rsync_share_names is defined and backuppc_rsync_share_names | length > 0 %}
+$Conf{RsyncShareName} = [
+
+{% for share in backuppc_rsync_share_names %}
+	'{{ share }}'{% if not loop.last %},{% endif %}
+{% endfor %}
+];
+{% endif %}
+
+{% if backuppc_include_files is defined and backuppc_include_files | length > 0 %}
 $Conf{BackupFilesOnly} = {'*' => [
 
-{% for item in include_files %}
+{% for item in backuppc_include_files %}
 		'{{ item }}'{% if not loop.last %},{% endif %}
 {% endfor %}
 	]
 };
 {% endif %}
 
-{% if exclude_files is defined %}
+{% if backuppc_exclude_files is defined and backuppc_exclude_files | length > 0 %}
 $Conf{BackupFilesExclude} = {
 	'*' => [
-{% for item in exclude_files %}
+{% for item in backuppc_exclude_files %}
 		'{{ item }}'{% if not loop.last %},{% endif %}
 
 {% endfor %}
@@ -23,7 +32,7 @@ $Conf{BackupFilesExclude} = {
 };
 {% endif %}
 
-$Conf{XferMethod} = '{{ xfermethod | default("rsync") }}';
+$Conf{XferMethod} = '{{ backuppc_xfermethod | default("rsync", true) }}';
 
 $Conf{ClientCharsetLegacy} = 'utf-8';
 
@@ -46,9 +55,9 @@ $Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
 
 {% endif %}
 
-{% if more is defined %}
+{% if backuppc_more is defined and backuppc_more | length > 0 %}
 # More options...
-{% for key, value in more.items() %}
+{% for key, value in backuppc_more.items() %}
 {% if value is string or value is number %}
 $Conf{{ '{' }}{{ key }}{{ '}' }} = '{{ value }}';
 {% else %}

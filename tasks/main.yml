@@ -1,4 +1,5 @@
 ---
+## backuppc_client role's tasks
 
 - name: INCLUDE | install rsync and backuppc user
   import_tasks: install.yml
@@ -21,3 +22,5 @@
 
 - name: INCLUDE | SSH to server related configuration
   import_tasks: ssh.yml
+
+...

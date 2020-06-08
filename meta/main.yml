@@ -5,14 +5,16 @@ galaxy_info:
   description: Install and manage BackupPC Client
   company: Universidad de la República (UdelaR)
   license: GPLv3
-  min_ansible_version: 1.9
+  min_ansible_version: 2.9
   platforms:
   - name: Debian
     versions:
     - stretch
+    - buster
   galaxy_tags:
   - backup
   - restore
+  - backuppc
   - rsync
   - security
   - debian

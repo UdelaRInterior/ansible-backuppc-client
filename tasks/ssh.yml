@@ -18,36 +18,36 @@
 
 - name: Manage known_hosts keys in backup server
   block: 
-  - name: Remove old host domain ssh keys
+  - name: KNOWN_HOSTS | Remove old host domain ssh keys
     known_hosts:
       path: '{{ backuppc_server_home }}/.ssh/known_hosts'
       name: "{{ inventory_hostname }}"
       state: absent
 
-  - name: Remove old host IPv4 ssh keys
+  - name: KNOWN_HOSTS | Remove old host IPv4 ssh keys
     known_hosts:
       path: '{{ backuppc_server_home }}/.ssh/known_hosts'
       name: "{{ IPv4 }}"
       state: absent
-    loop: "{{ ansible_facts.all_ipv4_addresses }}"
+    loop: "{{ ansible_facts.all_ipv4_addresses | default ( '[]', true ) }}"
     loop_control:
       loop_var: IPv4
 
-  - name: Remove old host IPv6 ssh keys
+  - name: KNOWN_HOSTS | Remove old host IPv6 ssh keys
     known_hosts:
       path: '{{ backuppc_server_home }}/.ssh/known_hosts'
       name: "{{ IPv6 }}"
       state: absent
-    loop: "{{ ansible_facts.all_ipv6_addresses }}"
+    loop: "{{ ansible_facts.all_ipv6_addresses | default ( '[]', true ) }}"
     loop_control:
       loop_var: IPv6
 
-  - name: ssh public key of client
+  - name: SHELL | ssh public key of client
     shell: "ssh-keyscan {{ inventory_hostname }}"
     register: ssh_known_host_results
     ignore_errors: yes
 
-  - name: add client key to known_hosts in server
+  - name: KNOWN_HOSTS | add client key to known_hosts in server
     known_hosts:
       path: '{{ backuppc_server_home }}/.ssh/known_hosts'
       name: "{{ inventory_hostname }}"
@@ -55,4 +55,6 @@
       state: present
 
   delegate_to: "{{ backuppc_server_name }}"
-  become_user: "{{ backuppc_client_user }}"
+  become_user: "{{ backuppc_server_user }}"
+
+...

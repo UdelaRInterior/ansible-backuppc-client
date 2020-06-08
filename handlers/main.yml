@@ -1,8 +1,11 @@
 ---
+## Handlers or role backuppc_client
 
-- name: restart backuppc
+- name: backuppc_client - restart backuppc
   service: 
     name: backuppc
     state: restarted
     enabled: yes
   delegate_to: "{{ backuppc_server_name }}"
+
+...
