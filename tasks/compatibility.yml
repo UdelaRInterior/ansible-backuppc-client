@@ -1,0 +1,20 @@
+---
+## Some variables have been renamed in namespace `backuppc_*`
+## Backwards compatibility will be maintained for a while, but not for ever
+
+- name: exclude_files legacy variable
+  set_fact:
+    backuppc_exclude_files: '{{ exclude_files }}'
+  when: exclude_files is defined
+
+- name: xfermethod legacy variable
+  set_fact:
+    backuppc_xfermethod: '{{ xfermethod }}'
+  when: xfermethod is defined
+
+- name: more legacy variable
+  set_fact:
+    backuppc_more: '{{ more }}'
+  when: more is defined
+
+...

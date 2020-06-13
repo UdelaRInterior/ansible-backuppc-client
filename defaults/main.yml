@@ -10,7 +10,7 @@ backuppc_client_group: backuppc
 backuppc_client_home: "{{ backuppc_local_fetch_dir if backuppc_local_fetch_dir is defined else '/var/lib/backuppc' }}"
 ## `backuppc_local_fetch_dir` is a backward's compatibility variable, now renamed for clarification
 
-## Server configuration 
+## Server basic client's configuration 
 
 # The BackupPC server to configure and to fetch ssh key from. Normally installed with backuppc_server role
 backuppc_server_name: localhost
@@ -46,56 +46,73 @@ backuppc_rsync_share_names: '{{ backuppc_rsync_share_names_legacy if include_fil
 # the folders inside the defined shares that will be dumped to the backup (see BackupPC documentation)
 backuppc_include_files: '{{ include_files if include_files is defined else backuppc_include_files_default }}'
 # Define it as a list of folders, similarly that backuppc_rsync_share_names
+# backuppc_include_files:
+# - /etc
+# - /home
+# - /var/lib
 ## `include_files` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
+## in the future, it would be better to let this variable undefined by default
 
 # You can also define a list of files to be excluded 
-backuppc_exclude_files: '{{ exclude_files | default ( "[]" ) }}'
+# backuppc_exclude_files: 
 # Define it as a list of folders, similarly that backuppc_rsync_share_names
 ## `exclude_files` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
+## See file tasks/compatibility.yml
 
-# Backup transfer method
-backuppc_xfermethod: "{{ xfermethod if xfermethod is defined else '' }}"
+# Backup transfer method. All possibles BackupPC values are valid, but the role is designed and tested only for `rsync` method
+# backuppc_xfermethod: 
 ## `xfermethod` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
+## See file tasks/compatibility.yml
 
 # BackupPC client host additional parameters  
-backuppc_more: "{{ more if more is defined else '[]' }}"
+# backuppc_more:
+# You can, form instant, define longer periods of backups preservation
+# backuppc_more:
+#   ## 105 semanas, 2 añqqos
+#   FullKeepCnt: 105
+#   FullKeepCntMin: 10
+#   FullAgeMax: 730
+#   ## 183 días, medio año
+#   IncrKeepCnt: 183
+#   IncrKeepCntMin: 10
+#   IncrAgeMax: 730
 ## `more` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
+## See file tasks/compatibility.yml
 
 backuppc_RsyncClientCmd: '$sshPath -x -q -l {{ backuppc_client_user }} $host sudo $rsyncPath $argList+'
 backuppc_RsyncClientRestoreCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host sudo $rsyncPath $argList+'
 
+## Pre-dump and post-dump bacckup scripts and associated configuration parameters
+# Those scripts are useful to perform tasks such as databases dumps or snapshots to prepare coherent backups
+
 # Flag to install the scripts pre_dump.sh and post_dump.sh
 backuppc_scripts: false
+## This variable is deprecated, in future versions we should install each script if it's variable is defined.
+## Prepare your variables to API! Explicitely define the needed scripts in your playbook variables! 
+
+# Pre-dump script
+backuppc_pre_dump_script: '{{ backuppc_client_home }}/scripts/pre_dump.sh'
+# In future versions this variable should be undefined by default
+
+# Post-dump script
+backuppc_post_dump_script: '{{ backuppc_client_home }}/scripts/post_dump.sh'
+# In future versions this variable should be undefined by default
+
+# Local directory in the Ansible controller where the role finds the scripts
+backuppc_scripts_local_dir: '{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/files/backuppc/'
 
 # Flag to give sudo rights to pre_dump.sh and post_dump.sh scripts
 backuppc_scripts_sudo: false
 
 # The ssh command for backuppc to execute the pre_dump and post_dump scripts
-backuppc_DumpPreUserCmd: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_sudo
-                       %}$sshPath -q -x -l {{ backuppc_client_user }} $host sudo {{ backuppc_client_home }}/scripts/pre_dump.sh{%
-                    else
-                       %}$sshPath -q -x -l {{ backuppc_client_user }} $host {{ backuppc_client_home }}/scripts/pre_dump.sh{%
-                    endif %}'
-backuppc_DumpPostUserCmd: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_sudo
-                       %}$sshPath -q -x -l {{ backuppc_client_user }} $host sudo {{ backuppc_client_home }}/scripts/post_dump.sh{%
-                    else
-                       %}$sshPath -q -x -l {{ backuppc_client_user }} $host {{ backuppc_client_home }}/scripts/post_dump.sh{%
-                    endif %}'
+backuppc_DumpPreUserCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host {% if backuppc_scripts_sudo %}sudo{% endif %} {{ backuppc_pre_dump_script }}'
+
+backuppc_DumpPostUserCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host {% if backuppc_scripts_sudo %}sudo{% endif %} {{ backuppc_post_dump_script }}'
 
 # The commands authorized in the client to the user backuppc. This variable _must_ start with "Cmnd_Alias BACKUPS"
-backuppc_sudoer: '{% if backuppc_scripts_sudo is defined and backuppc_scripts_sudo
-                     %}Cmnd_Alias BACKUPS = /usr/bin/rsync, {{ backuppc_client_home }}/scripts/pre_dump.sh, {{ backuppc_client_home }}/scripts/post_dump.sh{%
-                  else
-                     %}Cmnd_Alias BACKUPS = /usr/bin/rsync{%
-                  endif %}'
+backuppc_sudoer: 'Cmnd_Alias BACKUPS = /usr/bin/rsync{% if backuppc_scripts_sudo %}, {{ backuppc_pre_dump_script }}, {{ backuppc_post_dump_script }}{% endif %}'
 
-# Main user for the client host in BackupPC Web interface 
-backuppc_server_web_main_user: '{{ backuppc_server_user }}'
-
-# Additional users for the client host in BackupPC Web interface 
-backuppc_server_web_other_users: "{{ backuppc_users if backuppc_users is defined else '' }}"
-# "user1,user2,user3": Users who have access to backups.
-# they must be configured in the backuppc server
+## Database dump helpers of the role
 
 # Three states variabale for a mysql or pgsql dump before backups.
 # Mysql option defines a mysql user named {{ backuppc_db_dump_user }} with SELECT access to all databases. You must add yourself the
@@ -112,5 +129,16 @@ backuppc_db_server_type: ''
 backuppc_db_dump_user: "{{ backuppc_client_user }}"
 backuppc_db_dump_user_pass: 'put_it_from_a_vault'
 backuppc_db_to_dump_name: 'my_app'
+
+## BackupPC web interface
+
+# Main user for the client host in BackupPC Web interface 
+backuppc_server_web_main_user: '{{ backuppc_server_user }}'
+## It's good to re-define this variable and to configura an alias mail in the server to be reported backup incidents
+
+# Additional users for the client host in BackupPC Web interface 
+backuppc_server_web_other_users: "{{ backuppc_users if backuppc_users is defined else '' }}"
+# "user1,user2,user3": Users who have access to backups.
+# they must be configured in the backuppc server
 
 ...

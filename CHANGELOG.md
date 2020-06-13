@@ -1,6 +1,13 @@
 # Change log of [ansible-backuppc-client](https://github.com/UdelaRInterior/ansible-backuppc-client) role
 
-## [v2.0.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v2.0.0) 
+## [v2.1.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v2.1.0) 
+
+* resolution of marginal bug when include or explude files lists are empty, that appears with default variables value's of v1.X.0, that we preserve for backwards compatibility
+* per and post dumps scripts names and placement parametrisation
+* simplification ofo some formulas
+* consistent and extended documentation
+
+## [v2.0.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v2.0.0)
 
 * Managment of `backuppc_rsync_share_names` configuration for clients, in order to achieve backups with several rsync
 * Standardisation of API: all variables are in namespace `backuppc_`

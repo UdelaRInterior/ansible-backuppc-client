@@ -1,28 +1,46 @@
 ---
 # Copy the pre dump and post dump scripts to server
 
-- name: FILE | Create directory for scripts
-  file:
-    path: "{{ backuppc_client_home }}/scripts"
-    state: directory
-    owner: "{{ backuppc_client_user }}"
-    group: "{{ backuppc_client_group }}"
-    mode: 0766
+- name: Pre-dump script
+  block:
 
-- name: COPY | Copy pre_dump backup script
-  copy:
-    src: "{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/files/backuppc/pre_dump.sh"
-    dest: "{{ backuppc_client_home }}/scripts/pre_dump.sh"
-    owner: "{{ backuppc_client_user }}"
-    group: "{{ backuppc_client_group }}"
-    mode: 0766
+  - name: FILE | Create directory for pre-dump scripts
+    file:
+      path: '{{ backuppc_pre_dump_script | dirname }}'
+      state: directory
+      owner: '{{ backuppc_client_user }}'
+      group: '{{ backuppc_client_group }}'
+      mode: 0766
 
-- name: COPY | Copy post_dump backup script
-  copy:
-    src: "{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/files/backuppc/post_dump.sh"
-    dest: "{{ backuppc_client_home }}/scripts/post_dump.sh"
-    owner: "{{ backuppc_client_user }}"
-    group: "{{ backuppc_client_group }}"
-    mode: 0766
+  - name: COPY | Copy pre_dump backup script
+    copy:
+      src: "{{ backuppc_scripts_local_dir }}/{{ backuppc_pre_dump_script | basename }}"
+      dest: "{{ backuppc_pre_dump_script }}"
+      owner: "{{ backuppc_client_user }}"
+      group: "{{ backuppc_client_group }}"
+      mode: 0766
+
+  when: backuppc_pre_dump_script is defined
+
+- name: Post-dump script
+  block:
+
+  - name: FILE | Create directory for post-dump scripts
+    file:
+      path: '{{  backuppc_post_dump_script | dirname }}'
+      state: directory
+      owner: '{{ backuppc_client_user }}'
+      group: '{{ backuppc_client_group }}'
+      mode: 0766
+
+  - name: COPY | Copy post_dump backup script
+    copy:
+      src: "{{ backuppc_scripts_local_dir }}/{{ backuppc_post_dump_script | basename }}"
+      dest: "{{ backuppc_post_dump_script }}"
+      owner: "{{ backuppc_client_user }}"
+      group: "{{ backuppc_client_group }}"
+      mode: 0766
+
+  when: backuppc_post_dump_script is defined
 
 ...

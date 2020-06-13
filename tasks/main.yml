@@ -1,6 +1,10 @@
 ---
 ## backuppc_client role's tasks
 
+## This file will be removed in future versions
+- name: INCLUDE | backward's compatibility of API
+  import_tasks: compatibility.yml
+
 - name: INCLUDE | install rsync and backuppc user
   import_tasks: install.yml
   when: backuppc_client

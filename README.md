@@ -24,11 +24,16 @@ You will need to have a running backuppc server managed in your Ansible inventor
 
 At this time, this role only manages backups via rsync (+ ssh) method.
 
+Backwards' compatibility
+------------------------
+To ensure a smooth and progressive adoption of this version of the role accross all the hosts that use it in a cloud envireonement, the role is backwards compatible with [the v1.X.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v1.3.0) variables' role API. including its default values. See [defaults/main.yml](defaults/main.yml) and [tasks/compatibility.yml](tasks/compatibility.yml) files, particularly comments, for legacy variables' consideration.
+
+Backwards role's compatibility will be dorped in next major release, so adapt your hosts variables API asap!
 
 Role Variables
 --------------
 
-Each client configuration overrides global configuration in the server. See [defaults/main.yml](defaults/main.yml) for default variables values or definition. Hereafter are defined the variables that can be defined.
+Each client configuration overrides global configuration in the server. See [defaults/main.yml](defaults/main.yml) for default variables values or definition. Hereafter are listed the variables that can be defined.
 
 ### Client access
 
@@ -42,31 +47,55 @@ Each client configuration overrides global configuration in the server. See [def
 - `backuppc_server_user`: unix users that runs BackupPC in the server. Defaults to `backuppc`.
 - `backuppc_server_group`: unix group that runs BackupPC in the server. Defaults to `www-data`.
 - `backuppc_server_home`: home directory of BackupPC unix user in the server. Defaults to `/var/lib/backuppc`.
+- `backuppc_server_config_dir`: BackupPC package configuration files' directory. Defaults to `/etc/backuppc`. 
 
 ### Client's backup configuration in the server
+
+Here are briefely described the role's variables that define BackupPC configuration of the client in the server. For a full documentation see [BackupPC documentation](https://backuppc.github.io/backuppc/BackupPC.html#Configuration-Parameters) itself.
 
 The following flags define whether client and server are configured by the role: 
 
 - `backuppc_backup_state`: absent or present (default: present). If present, configures the backups of the client in the server, else eliminates the configuration
 - `backuppc_client`: if set to `false` (default value `true`) there is no ssh access or other configuration in the client host, only the server is configured to backup the host
 
-The backups configuration file in BackupPC is built with the following variables 
+The client's configuration file in BackupPC server is built with the following variables:
 
-- `backuppc_rsync_share_names`: list of folder's tree points in the client to backup
-- `backuppc_include_files:`: default files (directories) list of folders in the client to backup
-- `backuppc_exclude_files:`: default files (directories) list of folders to exclude in backups
+- `backuppc_rsync_share_names`: list of folder's tree points in the client to backup. For instance: 
+```
+backuppc_rsync_share_names:
+- /etc
+- /root
+- /var
+- /usr/local
+```
+With rsync method, BackupPC will perform an rsync command for each element of this list. 
+- `backuppc_include_files:`: list of folders to include in the client's backup (the --include option of rsync will be built with this variable)
+- `backuppc_exclude_files:`: list of folders to exclude from the client's backup (the --exclude option of rsync will be built with this variable)
 - `backuppc_xfermethod`: Optional transfer method (rsync as default)
-- `backuppc_more`: Optional hash with specific key/value (usefull for custom directives, such as the backup scheduling and preservation)
+- `backuppc_more`: Optional hash with specific key/value (usefull for custom directives, such as the backup scheduling and preservation). See example in [defaults/main.yml](defaults/main.yml) file.
 
-The following variables allow to define the execution of pre and post files dump scripts by BackupPC: 
-
-- `backuppc_scripts`: Scripts true/false flag. If true installs the scripts to launch before and after the files dump to the server. This scripts _must_ be called **`pre_dump.sh`** and **`post_dump.sh`** and _must_ be placed in the folder `host_vars/<client_host>/files/backuppc/`.
-- `backuppc_scripts_sudo`: true/false flag to give sudo access rights to pre_dump.sh and post_dump.sh scripts
+The following variables allow to define the execution of pre and post files' dump scripts by BackupPC: 
+- `backuppc_pre_dump_script`: path of the file of the pre dump dump script, that BackupPC will execute before dumping files during a backup. It's default value is `'{{ backuppc_client_home }}/scripts/pre_dump.sh'`
+- `backuppc_post_dump_script`: path of the file of the post dump dump script, that BackupPC will execute after dumping files during a backup. It's default value is `'{{ backuppc_client_home }}/scripts/post_dump.sh'`
+- `backuppc_scripts_local_dir`: path in the local Ansible controller where the playbook will find the two previous scripts to install them in the client. Its default value is `'{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/files/backuppc/'`. Therefore, in the directories structure of your playbook, you will have to put the pre and post dump scripts, in files with the same basenames than their respective path hereabove, in a folder called `files/backuppc`, aside the `vars` folder of the host you are configuring: 
+```
+ host_vars
+ └── <your_host>
+     ├── files
+     │   └── backuppc
+     │       ├── post_dump.sh
+     │       └── pre_dump.sh
+     └── vars
+         ├── 10_kvm_virtual.yml
+         └── 20_backuppc.yml
+```
+- `backuppc_scripts`: Scripts true/false flag. If true installs the pre and post dump scripts previously described. This flag is deprecated. It is preserved for backwards compatibility, but, in the next major version, it will be droped, and the scripts will be installed when their path is defined. 
+- `backuppc_scripts_sudo`: true/false flag to give sudo access rights to pre and post dump scripts
 - `backuppc_DumpPreUserCmd` and `backuppc_DumpPostUserCmd`: ssh commands for backuppc to execute the pre_dump and post_dump scripts. These variables are pre-defined according to previous flags, but can be overwritten.
 
-- `backuppc_sudoer` the commands authorized with sudo for  `backuppc_client_user` user. It is a string that can be overwritten, as far as it starts with `Cmnd_Alias BACKUPS =`, followed by the list of shell commands that the user needs to exec ute to perform a backup. As predefined, this variable includes rsync, and eventually pre and post dump scripts, according to previous flags.
+- `backuppc_sudoer` the commands authorized with sudo for `backuppc_client_user` user. It is a string that can be overwritten, as far as it starts with `Cmnd_Alias BACKUPS =`, followed by the list of shell commands that the user needs to exec ute to perform a backup. As predefined, this variable includes rsync, and eventually pre and post dump scripts, according to previous flags.
 
-The following variables give some tools to define the dump of databases for backups coherency: 
+The following variables give some tools to define, using hereabove described scripts, the dump of databases for backups coherency: 
 
 - `backuppc_db_server_type`:  Three states variabale that defines eventual mysql or pgsql dump before backups. The three possible values are: pgsql, mysql or null. Behaviour of scripts and db backups are different for mysql and pgsql. Particularly, for MySQL you must add yourself the scripts `pre_dump.sh` and `post_dump.sh` that do the job of dumping databases, while for PostgreSQL these scripts are built form templates (and they dump only a database). For PostgreSQL rights on the database must be previously defined, while contrarily MySQL task assign database access rights to a given user.   
 - For PostgreSQL, variables are:
@@ -81,7 +110,6 @@ The following variables give some tools to define the dump of databases for back
 The following variables configure the web access for the client host's backups on BackupPC web interface:  
 - `backuppc_server_web_main_user`: # Main user with access to the client host's backups through BackupPC Web interface. Defaults to `backuppc`.
 - `backuppc_server_web_other_users`: Other users with access to the client host's backups through BackupPC Web interface Must be defined as a string listing users separated by commas: "user1,user2". User's access must be configured in the BackupPC server.
-
 
 ### Mysql script examples
 

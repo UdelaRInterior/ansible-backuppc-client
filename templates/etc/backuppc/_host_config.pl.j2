@@ -2,7 +2,7 @@
 # {{ ansible_managed }}
 #
 
-{% if backuppc_rsync_share_names is defined and backuppc_rsync_share_names | length > 0 %}
+{% if backuppc_rsync_share_names is defined %}
 $Conf{RsyncShareName} = [
 
 {% for share in backuppc_rsync_share_names %}
@@ -11,7 +11,7 @@ $Conf{RsyncShareName} = [
 ];
 {% endif %}
 
-{% if backuppc_include_files is defined and backuppc_include_files | length > 0 %}
+{% if backuppc_include_files is defined %}
 $Conf{BackupFilesOnly} = {'*' => [
 
 {% for item in backuppc_include_files %}
@@ -21,7 +21,7 @@ $Conf{BackupFilesOnly} = {'*' => [
 };
 {% endif %}
 
-{% if backuppc_exclude_files is defined and backuppc_exclude_files | length > 0 %}
+{% if backuppc_exclude_files is defined %}
 $Conf{BackupFilesExclude} = {
 	'*' => [
 {% for item in backuppc_exclude_files %}
