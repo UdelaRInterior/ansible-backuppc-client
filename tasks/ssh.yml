@@ -18,12 +18,7 @@
 
 - name: Manage known_hosts keys in backup server
   block: 
-  - name: KNOWN_HOSTS | Remove old host domain ssh keys
-    known_hosts:
-      path: '{{ backuppc_server_home }}/.ssh/known_hosts'
-      name: "{{ inventory_hostname }}"
-      state: absent
-
+  ## We remove IP keys if ever they have changed
   - name: KNOWN_HOSTS | Remove old host IPv4 ssh keys
     known_hosts:
       path: '{{ backuppc_server_home }}/.ssh/known_hosts'
@@ -47,7 +42,7 @@
     register: ssh_known_host_results
     ignore_errors: yes
 
-  - name: KNOWN_HOSTS | add client key to known_hosts in server
+  - name: KNOWN_HOSTS | add or update client key to known_hosts in server
     known_hosts:
       path: '{{ backuppc_server_home }}/.ssh/known_hosts'
       name: "{{ inventory_hostname }}"
