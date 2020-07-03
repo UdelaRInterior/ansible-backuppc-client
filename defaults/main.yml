@@ -16,7 +16,7 @@ backuppc_client_home: "{{ backuppc_local_fetch_dir if backuppc_local_fetch_dir i
 backuppc_server_name: localhost
 # Tipycal definition: backuppc_server_name: backuppc.mydomain.org
 
-# BackupPC unic user in the server, from which are launched ssh backups to the client.
+# BackupPC unix user in the server, from which are launched ssh backups to the client.
 backuppc_server_user: backuppc
 # BackupPC group in the server
 backuppc_server_group: www-data
@@ -35,6 +35,9 @@ backuppc_backup_state: "{{ backup_state if backup_state is defined else 'present
 backuppc_client: true
 
 ## List of folder's tree points to backup 
+## See RsyncShareName variable comments in config.pl template
+backuppc_RsyncShareName: '{{ backuppc_rsync_share_names }}'
+# for backward's compatibility we define this snake_case version of the variable unfortunatelly introduced in v2.1.1
 backuppc_rsync_share_names: '{{ backuppc_rsync_share_names_legacy if include_files is defined else backuppc_rsync_share_names_default }}'
 # Define it as a list of folders
 # backuppc_rsync_share_names:
@@ -42,6 +45,8 @@ backuppc_rsync_share_names: '{{ backuppc_rsync_share_names_legacy if include_fil
 # - /root
 # - /var
 # - /usr/local
+
+
 
 # the folders inside the defined shares that will be dumped to the backup (see BackupPC documentation)
 backuppc_include_files: '{{ include_files if include_files is defined else backuppc_include_files_default }}'
