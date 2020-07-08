@@ -1,11 +1,11 @@
 BackupPC-Client Ansible role
 ============================
 
-This role, backuppc_client, installs and configures both sides for client hosts of a Backuppc server. It works with a [backuppc_server](https://galaxy.ansible.com/udelarinterior/backuppc_server) role that configures the server (However, as far as the configuration is standard and Ansible has access, it can handle any backuppc server installation). 
+This role, backuppc_client, configures both sides for client hosts of a Backuppc server. It has a sister role [backuppc_server](https://galaxy.ansible.com/udelarinterior/backuppc_server) that configures the server (However, as far as the configuration is standard and Ansible has access, it can handle almost any backuppc server installation). 
 
 It works on Debian Buster (10) and Stretch (9) for advanced configuration (databases backup) but for basic backuppc dump configuration, it can handle Ubuntu or any other Debian-based systems (PR accepted).
 
-This role and its peer [backuppc_server](https://galaxy.ansible.com/udelarinterior/backuppc_server) are based on [hanxhx/backuppc](https://galaxy.ansible.com/hanxhx/backuppc) role.
+This role and its sister [backuppc_server](https://galaxy.ansible.com/udelarinterior/backuppc_server) are based on [hanxhx/backuppc](https://galaxy.ansible.com/hanxhx/backuppc) role.
 
 
 Description
@@ -35,6 +35,8 @@ Role Variables
 
 Each client configuration overrides global configuration in the server. See [defaults/main.yml](defaults/main.yml) for default variables values or definition. Hereafter are listed the variables that can be defined.
 
+- `backuppc_server_name`: domain name of the BackupPC server that performs the backup and where the ssh key is fetched to be configured on the client
+
 ### Client access
 
 - `backuppc_client_user`: unix user for the server to connect as to the client (default `backuppc`)
@@ -43,7 +45,6 @@ Each client configuration overrides global configuration in the server. See [def
 
 ### Server configuration
 
-- `backuppc_server_name`: domain name of the BackupPC server that performs the backup and where the ssh key is fetched to be configured on the client
 - `backuppc_server_user`: unix users that runs BackupPC in the server. Defaults to `backuppc`.
 - `backuppc_server_group`: unix group that runs BackupPC in the server. Defaults to `www-data`.
 - `backuppc_server_home`: home directory of BackupPC unix user in the server. Defaults to `/var/lib/backuppc`.
@@ -51,7 +52,7 @@ Each client configuration overrides global configuration in the server. See [def
 
 ### Client's backup configuration in the server
 
-Here are briefely described the role's variables that define BackupPC configuration of the client in the server. For a full documentation see [BackupPC documentation](https://backuppc.github.io/backuppc/BackupPC.html#Configuration-Parameters) itself.
+Here are briefely described the role's variables that define BackupPC configuration of the client in the server. For a full documentation see [BackupPC documentation](https://backuppc.github.io/backuppc/BackupPC.html#Configuration-Parameters) itself, or the [config.pl.j2 template comments](https://github.com/UdelaRInterior/ansible-backuppc/blob/v3.0.0/templates/etc/backuppc/config.pl.j2) of the server role.
 
 The following flags define whether client and server are configured by the role: 
 
@@ -60,7 +61,9 @@ The following flags define whether client and server are configured by the role:
 
 The client's configuration file in BackupPC server is built with the following variables:
 
-- `backuppc_rsync_share_names`: list of folder's tree points in the client to backup. For instance: 
+#### What to backup
+
+- `backuppc_RsyncShareName`: list of folder's tree points in the file system of the client to backup. For instance: 
 ```
 backuppc_rsync_share_names:
 - /etc
@@ -69,10 +72,43 @@ backuppc_rsync_share_names:
 - /usr/local
 ```
 With rsync method, BackupPC will perform an rsync command for each element of this list. 
-- `backuppc_include_files:`: list of folders to include in the client's backup (the --include option of rsync will be built with this variable)
-- `backuppc_exclude_files:`: list of folders to exclude from the client's backup (the --exclude option of rsync will be built with this variable)
-- `backuppc_xfermethod`: Optional transfer method (rsync as default)
-- `backuppc_more`: Optional hash with specific key/value (usefull for custom directives, such as the backup scheduling and preservation). See example in [defaults/main.yml](defaults/main.yml) file.
+Note: as stated above, only rsync transfer method is considered as transfer method, so we don't mention `SmbShareName`, `TarShareName` or other similar BacupPC configuration parameters, or related. 
+
+- `backuppc_BackupFilesOnly`: List of directories or files to include in backups. This can be set to a string, a list of strings, or, in the case of multiple shares, a dict of strings or lists. A dict is used to give a list of directories or files to backup for each share (the share name is the key). If a dict is used, a special key `"*"` means it applies to all shares that don't have a specific entry.
+
+For instance, the following configuration parameters: 
+```
+backuppc_RsyncShareName:
+- /etc/gitlab
+- /var/opt/gitlab
+
+backuppc_srv_BackupFilesOnly:
+  # Configuration archives fo GitLab instance:
+  "/etc/gitlab":
+    - /gitlab.rb
+    - /gitlab-secrets.json
+  # Gotlab backup file
+  "/var/opt/gitlab":
+    - /backups/dump_backuppc_gitlab_backup.tar
+```
+will perform the backup of the three needed file of a GitLab instance. (`dump_backuppc_gitlab_backup.tar` is built by a script just before the dump, see hereafter 
+
+- `backuppc_BackupFilesExclude:`: list of folders to exclude from the client's backup (the --exclude option of rsync will be built with this variable)
+- `backuppc_XferMethod`: Optional transfer method (rsync as default)
+- `backuppc_more`: Optional dict variable with specific key/value (usefull for custom directives, such as the backup scheduling and preservation). For a full documentation of parameters see [BackupPC documentation](https://backuppc.github.io/backuppc/BackupPC.html#Configuration-Parameters) itself, or the [config.pl.j2 template comments](https://github.com/UdelaRInterior/ansible-backuppc/blob/v3.0.0/templates/etc/backuppc/config.pl.j2) of the server role. For instance with the following values whe keep incremental backups por six months and full backups for two years, with a minimum of ten of each:
+```yaml
+backuppc_more:
+  ## 105 weeks, 2 years
+  FullKeepCnt: 105
+  FullKeepCntMin: 10
+  FullAgeMax: 730
+  ## 183 days, half a year
+  IncrKeepCnt: 183
+  IncrKeepCntMin: 10
+  IncrAgeMax: 730
+```
+
+### Pre and post scripts 
 
 The following variables allow to define the execution of pre and post files' dump scripts by BackupPC: 
 - `backuppc_pre_dump_script`: path of the file of the pre dump dump script, that BackupPC will execute before dumping files during a backup. It's default value is `'{{ backuppc_client_home }}/scripts/pre_dump.sh'`
