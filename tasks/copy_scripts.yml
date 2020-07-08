@@ -10,7 +10,15 @@
       state: directory
       owner: '{{ backuppc_client_user }}'
       group: '{{ backuppc_client_group }}'
-      mode: 0766
+
+  - name: TEMPLATE | Template pre dump script
+    template:
+      src: '{{ backuppc_pre_dump_template }}'
+      dest: '{{ backuppc_pre_dump_script_full }}'
+      owner: '{{ backuppc_client_user }}'
+      group: '{{ backuppc_client_group }}'
+      mode: 0755
+    when: backuppc_pre_dump_template is defined
 
   - name: COPY | Copy pre_dump backup script
     copy:
@@ -18,7 +26,8 @@
       dest: "{{ backuppc_pre_dump_script_full }}"
       owner: "{{ backuppc_client_user }}"
       group: "{{ backuppc_client_group }}"
-      mode: 0766
+      mode: 0755
+    when: backuppc_pre_dump_template is not defined
 
   when: backuppc_pre_dump_script_full is defined
   
@@ -32,7 +41,16 @@
       state: directory
       owner: '{{ backuppc_client_user }}'
       group: '{{ backuppc_client_group }}'
-      mode: 0766
+      mode: 0755
+
+  - name: TEMPLATE | Template post dump script
+    template:
+      src: '{{ backuppc_post_dump_template }}'
+      dest: '{{ backuppc_post_dump_script_full }}'
+      owner: '{{ backuppc_client_user }}'
+      group: '{{ backuppc_client_group }}'
+      mode: 0755
+    when: backuppc_post_dump_template is defined
 
   - name: COPY | Copy post_dump backup script
     copy:
@@ -40,7 +58,8 @@
       dest: "{{ backuppc_post_dump_script_full }}"
       owner: "{{ backuppc_client_user }}"
       group: "{{ backuppc_client_group }}"
-      mode: 0766
+      mode: 0755
+    when: backuppc_post_dump_template is not defined
 
   when: backuppc_post_dump_script_full is defined
 ...

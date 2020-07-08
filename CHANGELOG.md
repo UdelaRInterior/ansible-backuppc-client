@@ -7,6 +7,8 @@
 * As announced in v2.0.0, backwards compatibility with v1.X.Y API is no longer assuerd, to leverage code and avoid unexpected behaviours (as happend in v2 for empty include or exclude files lists)
 * v3.0.0 (and *a priori* all v3.X.Y) of the role maintains backwards compatibility with v2.X.Y API. But again: can change in fuuture verions. Update your playbooks to the new API asap!
 * backuppc_scripts desappear, as proposed in defaults/main.yml comments. big refactor of scripts management.
+* pre and post dump scripts may be individually installed or not and ran with sudo or not
+* New feature: now it's possible to build pre and post dump scripts from templates. This opens the possibility to develop modules for other apps than MySQL and PostgreSQL
 
 ## [v2.1.1](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v2.1.1) 
 

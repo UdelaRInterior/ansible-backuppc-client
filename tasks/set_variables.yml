@@ -4,58 +4,67 @@
 - name: SET_FACT | Define the needed script for pgsql pre dump
   set_fact:
       backuppc_pre_dump_script: scripts/pre_dump.sh
-  when: 
+      backuppc_pre_dump_template: etc/pgsql/pre_dump.sh.j2
+  when:
   - backuppc_db_server_type == 'pgsql'
   - backuppc_pre_dump_script is not defined
 
 - name: SET_FACT | Define the needed scripts for pgsql dump
   set_fact:
       backuppc_post_dump_script: scripts/post_dump.sh
-  when: 
+      backuppc_post_dump_template: etc/pgsql/post_dump.sh.j2
+  when:
   - backuppc_db_server_type == 'pgsql'
   - backuppc_post_dump_script is not defined
 
 - name: Define the full path of the pre dump script if defined
   set_fact:
-    backuppc_pre_dump_script_full: "{{ backuppc_server_home ~ '/' if backuppc_pre_dump_script is not regex('^/.*') }}{{ backuppc_pre_dump_script }}"
-    backuppc_script_pre_sudo_final: > 
-      ( backuppc_script_pre_sudo is defined and backuppc_script_pre_sudo) or 
-      ( backuppc_script_pre_sudo is not defined and backuppc_scripts_sudo is defined and backuppc_scripts_sudo )
+    backuppc_pre_dump_script_full: >-
+      {{ backuppc_server_home ~ '/' if backuppc_pre_dump_script is not regex('^/.*') 
+      }}{{ backuppc_pre_dump_script }}
+    backuppc_script_pre_sudo_final: >-
+      {{ ( backuppc_script_pre_sudo is defined and backuppc_script_pre_sudo) or
+      ( backuppc_script_pre_sudo is not defined and backuppc_scripts_sudo is defined
+      and backuppc_scripts_sudo ) }}
   when: backuppc_pre_dump_script is defined
 
 - name: SET_FACT | Define backuppc_DumpPreUserCmd variable if not yet and needed
   set_fact:
-    backuppc_DumpPreUserCmd: >
-      $sshPath -q -x -l {{ backuppc_client_user }} $host 
-      {% if backuppc_script_pre_sudo_final %}sudo {% endif %}
+    backuppc_DumpPreUserCmd: >-
+      $sshPath -q -x -l {{ backuppc_client_user }} $host
+      {% if backuppc_script_pre_sudo_final %}sudo {% endif -%}
       {{ backuppc_pre_dump_script_full }}
-  when: 
+  when:
   - backuppc_DumpPreUserCmd is not defined
   - backuppc_pre_dump_script is defined
 
 - name: SET_FACT | Define the full path of the post dump script if defined
   set_fact:
-    backuppc_post_dump_script_full: "{{ backuppc_server_home ~ '/' if backuppc_post_dump_script is not regex('^/.*') }}{{ backuppc_post_dump_script }}"
-    backuppc_script_post_sudo_final: > 
-      ( backuppc_script_post_sudo is defined and backuppc_script_post_sudo) or 
-      ( backuppc_script_post_sudo is not defined and backuppc_scripts_sudo is defined and backuppc_scripts_sudo )
+    backuppc_post_dump_script_full: >-
+      {{ backuppc_server_home ~ '/' if backuppc_post_dump_script is not regex('^/.*')
+      }}{{ backuppc_post_dump_script }}
+    backuppc_script_post_sudo_final: >-
+      {{ ( backuppc_script_post_sudo is defined and backuppc_script_post_sudo) or
+      ( backuppc_script_post_sudo is not defined and backuppc_scripts_sudo is defined
+      and backuppc_scripts_sudo ) }}
   when: backuppc_post_dump_script is defined
 
 - name: SET_FACT | Define backuppc_DumpPostUserCmd variable if not yet and needed
   set_fact:
-    backuppc_DumpPostUserCmd: >
-      $sshPath -q -x -l {{ backuppc_client_user }} $host 
-      {% if backuppc_script_post_sudo_final %}sudo {% endif %}
+    backuppc_DumpPostUserCmd: >-
+      $sshPath -q -x -l {{ backuppc_client_user }} $host
+      {% if backuppc_script_post_sudo_final %}sudo {% endif -%}
       {{ backuppc_post_dump_script_full }}
-  when: 
+  when:
   - backuppc_DumpPostUserCmd is not defined
   - backuppc_post_dump_script is defined
 
 - name: SET_FACT | Define sudoer backuppc client user command 
   set_fact:
-    backuppc_sudoer: "Cmnd_Alias BACKUPS = /usr/bin/rsync{{ ', ' ~ backuppc_pre_dump_script_full
+    backuppc_sudoer: >-
+      Cmnd_Alias BACKUPS = /usr/bin/rsync{{ ', ' ~ backuppc_pre_dump_script_full
       if backuppc_script_pre_sudo_final is defined and backuppc_script_pre_sudo_final }}{{ ', ' ~  backuppc_post_dump_script_full
-      if backuppc_script_post_sudo_final is defined and backuppc_script_post_sudo_final }}"
+      if backuppc_script_post_sudo_final is defined and backuppc_script_post_sudo_final }}
   when: backuppc_sudoer is not defined
 
 ...

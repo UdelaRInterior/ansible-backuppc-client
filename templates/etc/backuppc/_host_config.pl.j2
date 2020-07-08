@@ -93,6 +93,8 @@ $Conf{BackupFilesExclude} =
  {};
 {%- endif %}
 
+$Conf{BackupsDisable} = {{ backuppc_BackupsDisable }};
+
 $Conf{XferMethod} = '{{ backuppc_xfermethod | default("rsync", true) }}';
 
 $Conf{ClientCharsetLegacy} = 'utf-8';
@@ -100,12 +102,12 @@ $Conf{ClientCharsetLegacy} = 'utf-8';
 $Conf{RsyncClientCmd} = '{{ backuppc_RsyncClientCmd }}';
 $Conf{RsyncClientRestoreCmd} = '{{ backuppc_RsyncClientRestoreCmd }}';
 
-{% if backuppc_scripts is defined and backuppc_scripts %}
-
+{% if backuppc_pre_dump_script_full is defined %}
 $Conf{DumpPreUserCmd} = '{{ backuppc_DumpPreUserCmd }}';
+{% endif %}
 
+{% if backuppc_post_dump_script_full is defined %}
 $Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
-
 {% endif %}
 
 {% if backuppc_db_server_type is defined and backuppc_db_server_type == 'pgsql' %}

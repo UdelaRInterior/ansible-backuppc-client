@@ -30,6 +30,12 @@ backuppc_server_config_dir: /etc/backuppc
 # Flag to configure or disable client's periodic backup
 backuppc_backup_state: 'present'  #present/absent, to configure or erase client host configuration in the server
 
+#  Whether automatic backups are enabled and manual ones remain possible 
+backuppc_BackupsDisable: 0
+# By default, backups are enabled and run according to schedule. 
+# With 1, automatic backups are disabled and maual backups are possible. 
+# With 2, all backups are disabled
+
 # Flag that defines if the client host is configured by Ansible or not. If false, the role will only configure the server
 backuppc_client: true
 # If false, ssh access to server must be solved elsewhere. This aparameter may be useful if you don't have Ansible access to a host you need to backup.
@@ -117,6 +123,17 @@ backuppc_scripts_local_dir: '{{ playbook_dir }}/host_vars/{{ inventory_hostname 
 # We should place our backup scripts in this file, with our Ansible code.
 # When `backuppc_db_server_type` is 'pgsql' (see hereafter) we can not use our own backuppc_pre_dump_script
 # and backuppc_post_dump_script.
+
+# Templates to build the pre and post dump scripts
+# backuppc_pre_dump_template:
+# backuppc_post_dump_template: 
+# Scripts can also be templated from the playbooks host variables. 
+# if any of the two previous variables are defiend, the scripts will be templated instead of uploaded 
+# form previous directory. 
+# We must set the variable to the full path of the template from your playbook directory. For instance: 
+# backuppc_pre_dump_template: '{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/templates/pre_dump.sh.j2'
+# backuppc_post_dump_template: '{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/templates/post_dump.sh.j2'
+# the role will take its templates from a folder /templates aside host's variables folder. 
 
 # Flags to execute pre dump and post dump scripts with sudo, so backuppc user becomes root
 # backuppc_scripts_sudo: false/true
