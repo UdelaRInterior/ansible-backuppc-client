@@ -65,7 +65,7 @@ The following flags define whether client and server are configured by the role:
 
 - `backuppc_RsyncShareName`: list of folder's tree points in the file system of the client to backup. For instance: 
 ```
-backuppc_rsync_share_names:
+backuppc_RsyncShareName:
 - /etc
 - /root
 - /var
@@ -87,13 +87,13 @@ backuppc_srv_BackupFilesOnly:
   "/etc/gitlab":
     - /gitlab.rb
     - /gitlab-secrets.json
-  # Gotlab backup file
+  # Gitlab backup file
   "/var/opt/gitlab":
     - /backups/dump_backuppc_gitlab_backup.tar
 ```
-will perform the backup of the three needed file of a GitLab instance. (`dump_backuppc_gitlab_backup.tar` is built by a script just before the dump, see hereafter 
+will perform the backup of the three needed file of a GitLab instance. (`dump_backuppc_gitlab_backup.tar` is built by a script just before the dump, see hereafter) 
 
-- `backuppc_BackupFilesExclude:`: list of folders to exclude from the client's backup (the --exclude options of rsync will be built with this variable). Its structure and syntax is similar to previous variable `backuppc_BackupFilesOnly`. By default, this variables is undefined, so the BackupPC parameters will be empty.
+- `backuppc_BackupFilesExclude`: list of folders to exclude from the client's backup (the --exclude options of rsync will be built with this variable). Its structure and syntax is similar to previous variable `backuppc_BackupFilesOnly`. By default, this variables is undefined, so the BackupPC parameters will be empty.
 
 - `backuppc_XferMethod`: Optional transfer method (rsync as default and, as mentionned, the only one option for the role)
 
