@@ -29,7 +29,7 @@ $Conf{RsyncShareName} = [
 $Conf{BackupFilesOnly} = 
 {%- if backuppc_BackupFilesOnly is defined %}
 {% if backuppc_BackupFilesOnly is string %}
- {{ backuppc_BackupFilesOnly }};
+ "{{ backuppc_BackupFilesOnly }}";
 {%- elif backuppc_BackupFilesOnly is mapping %} {
 {%- for Share, BackupFiles in backuppc_BackupFilesOnly.items() %}
 
@@ -55,7 +55,7 @@ $Conf{BackupFilesOnly} =
 ];
   {%- endif %}
 {%- else %}
- {};
+  {};
 {%- endif %}
 
 # Files to exclude from the backup of the host
@@ -64,7 +64,7 @@ $Conf{BackupFilesOnly} =
 $Conf{BackupFilesExclude} = 
 {%- if backuppc_BackupFilesExclude is defined %}
 {% if backuppc_BackupFilesExclude is string %}
- {{ backuppc_BackupFilesExclude }};
+ "{{ backuppc_BackupFilesExclude }}";
 {%- elif backuppc_BackupFilesExclude is mapping %} {
 {%- for Share, BackupFilesExclude in backuppc_BackupFilesExclude.items() %}
 
