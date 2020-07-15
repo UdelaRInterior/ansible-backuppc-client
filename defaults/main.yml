@@ -59,16 +59,16 @@ backuppc_rsync_share_names:
 # or files to backup for each share (the share name is the key). If a hash is used, a special key `"*"` means 
 #it applies to all shares that don't have a specific entry.
 #
-backuppc_srv_BackupFilesOnly: '{{ backuppc_include_files if backuppc_include_files is defined else "" }}'
+backuppc_BackupFilesOnly: '{{ backuppc_include_files if backuppc_include_files is defined else "" }}'
 #
 # See README.md for more explenations and example
 # backuppc_include_files is a legacy variable name, in v2.X.Y
 
 # List of directories or files to exclude from the backup: 
 #
-backuppc_srv_BackupFilesExclude: '{{ backuppc_exclude_files if backuppc_exclude_files is defined else "" }}'
+backuppc_BackupFilesExclude: '{{ backuppc_exclude_files if backuppc_exclude_files is defined else "" }}'
 # backuppc_exclude_files is a legacy variable name, in v2.X.Y
-# Syntax is similar than backuppc_srv_BackupFilesOnly
+# Syntax is similar than backuppc_BackupFilesOnly
 
 # Backup transfer method. All possibles BackupPC values are valid, but the role is designed and tested only for `rsync` method
 backuppc_XferMethod: '{{ backuppc_xfermethod if backuppc_xfermethod is defined else "rsync" }}'

@@ -82,7 +82,7 @@ backuppc_RsyncShareName:
 - /etc/gitlab
 - /var/opt/gitlab
 
-backuppc_srv_BackupFilesOnly:
+backuppc_BackupFilesOnly:
   # Configuration archives fo GitLab instance:
   "/etc/gitlab":
     - /gitlab.rb
@@ -203,7 +203,7 @@ rm dump.sql.tar.gz
 
 ### Web users with access to backups
 
-BackupPC users are configured, with their credentials and other data (mail) in the BackupPC server to have web access. For instance, with our [`backuppc_server` role](https://github.com/UdelaRInterior/ansible-backuppc/), they are defiend with the variable `backuppc_srv_web_users`. Their usernames can be set in the following variables, to give web access to the client host's backups on BackupPC web interface:  
+BackupPC users are configured, with their credentials and other data (mail) in the BackupPC server to have web access. For instance, with our [`backuppc_server` role](https://github.com/UdelaRInterior/ansible-backuppc/), they are defined with the variable `backuppc_srv_web_users`. Their usernames can be set in the following variables, to give web access to the client host's backups on BackupPC web interface:  
 - `backuppc_server_web_main_user`: Main user with access to the client host's backups through BackupPC Web interface. Defaults to `backuppc`. She also recieves administrative e-mails.
 - `backuppc_server_web_other_users`: Other users with access to the client host's backups through BackupPC Web interface Must be defined as a string listing users separated by commas: "user1,user2". 
 
