@@ -41,7 +41,7 @@ Each client configuration overrides global configuration in the server. See [def
 
 - `backuppc_client_user`: unix user for the server to connect as to the client (default `backuppc`)
 - `backuppc_client_group`: unix group of the unix user defined in the above line (default `backuppc`)
-- `backuppc_client_home`:  home directory of `backuppc_client_user` user that performs backups in the client 
+- `backuppc_client_home`:  home directory of `backuppc_client_user` user that performs backups in the client  (default `/var/lib/backuppc`)
 
 ### Server configuration
 
