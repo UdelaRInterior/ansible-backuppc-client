@@ -20,7 +20,7 @@
 - name: Define the full path of the pre dump script if defined
   set_fact:
     backuppc_pre_dump_script_full: >-
-      {{ backuppc_server_home ~ '/' if backuppc_pre_dump_script is not regex('^/.*') 
+      {{ backuppc_server_home ~ '/' if backuppc_pre_dump_script is not regex('^/.*') else ''
       }}{{ backuppc_pre_dump_script }}
     backuppc_script_pre_sudo_final: >-
       {{ ( backuppc_script_pre_sudo is defined and backuppc_script_pre_sudo) or
@@ -41,7 +41,7 @@
 - name: SET_FACT | Define the full path of the post dump script if defined
   set_fact:
     backuppc_post_dump_script_full: >-
-      {{ backuppc_server_home ~ '/' if backuppc_post_dump_script is not regex('^/.*')
+      {{ backuppc_server_home ~ '/' if backuppc_post_dump_script is not regex('^/.*') else ''
       }}{{ backuppc_post_dump_script }}
     backuppc_script_post_sudo_final: >-
       {{ ( backuppc_script_post_sudo is defined and backuppc_script_post_sudo) or
@@ -63,8 +63,8 @@
   set_fact:
     backuppc_sudoer: >-
       Cmnd_Alias BACKUPS = /usr/bin/rsync{{ ', ' ~ backuppc_pre_dump_script_full
-      if backuppc_script_pre_sudo_final is defined and backuppc_script_pre_sudo_final }}{{ ', ' ~  backuppc_post_dump_script_full
-      if backuppc_script_post_sudo_final is defined and backuppc_script_post_sudo_final }}
+      if backuppc_script_pre_sudo_final is defined and backuppc_script_pre_sudo_final else '' }}{{ ', ' ~ backuppc_post_dump_script_full
+      if backuppc_script_post_sudo_final is defined and backuppc_script_post_sudo_final else '' }}
   when: backuppc_sudoer is not defined
 
 ...
