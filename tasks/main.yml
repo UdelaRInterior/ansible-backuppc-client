@@ -1,9 +1,7 @@
 ---
 ## backuppc_client role's tasks
-
-## This file will be removed in future versions
-- name: INCLUDE | backward's compatibility of API
-  import_tasks: compatibility.yml
+- name: INCLUDE | Set calculated variables of the role
+  import_tasks: set_variables.yml
 
 - name: INCLUDE | install rsync and backuppc user
   import_tasks: install.yml
@@ -13,13 +11,13 @@
   import_tasks: mysql_config.yml
   when: backuppc_client and backuppc_db_server_type == 'mysql'
 
-- name: INCLUDE | config PostgreSQL
-  import_tasks: pgsql_config.yml
-  when: backuppc_client and backuppc_db_server_type == 'pgsql'
+#- name: INCLUDE | config PostgreSQL
+#  import_tasks: pgsql_config.yml
+#  when: backuppc_client and backuppc_db_server_type == 'pgsql'
 
 - name: INCLUDE | add file bash
   import_tasks: copy_scripts.yml
-  when: backuppc_client and backuppc_scripts
+  when: backuppc_client
 
 - name: INCLUDE | Backuppc server configuration
   import_tasks: config.yml

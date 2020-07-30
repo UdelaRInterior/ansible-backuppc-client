@@ -2,7 +2,6 @@
 ## Configure the client in the backuppc server
 
 - name: Configure the client backups in BackupPC server
-
   block:
   
   - name: TEMPLATE | Put host specific config on BackupPC server
