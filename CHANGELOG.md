@@ -1,5 +1,19 @@
 # Change log of [ansible-backuppc-client](https://github.com/UdelaRInterior/ansible-backuppc-client) role
 
+## [v3.0.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v3.0.0) 
+
+* Retranscription of work on [v3.0.0 of `backuppc_server` role](https://github.com/UdelaRInterior/ansible-backuppc/releases/tag/v3.0.0)
+* Full management of BackupFilesOnly and BackupFilesExclude BackupPC configuration parameters
+* As announced in v2.0.0, backwards compatibility with v1.X.Y API is no longer assuerd, to leverage code and avoid unexpected behaviours (as happend in v2 for empty include or exclude files lists)
+* v3.0.0 (and *a priori* all v3.X.Y) of the role maintains backwards compatibility with v2.X.Y API. But again: can change in fuuture verions. Update your playbooks to the new API asap!
+* backuppc_scripts desappear, as proposed in defaults/main.yml comments. big refactor of scripts management.
+* pre and post dump scripts may be individually installed or not and ran with sudo or not
+* New feature: now it's possible to build pre and post dump scripts from templates. This opens the possibility to develop modules for other apps than MySQL and PostgreSQL
+
+## [v2.1.1](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v2.1.1) 
+
+* Idempotency of server hnown_hosts file management
+
 ## [v2.1.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v2.1.0) 
 
 * resolution of marginal bug when include or explude files lists are empty, that appears with default variables value's of v1.X.0, that we preserve for backwards compatibility
