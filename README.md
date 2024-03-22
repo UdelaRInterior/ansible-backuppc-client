@@ -106,6 +106,8 @@ The following variables give some tools to define, using hereabove described scr
 - For Mysql, variables are:
   - `backuppc_db_server_root_pass` should be set to the appropriate value if the mysql `root` user has a password defined.  By default, the variable is undefined. It must be noticed that, in recent mysql/mariadb installation, at least in Debian, mysql installation doesn't ask for and doesn't ramdomly generate a root password. Debian maintainance is no longer done with a specific user and password, but with user root through a unix sock and not a tcp authenticated sock. If the variable remains undefined, mysql tasks will be performed using debian maintenance configuration. 
   - `backuppc_db_dump_user` and `backuppc_db_dump_user_pass` are the name of the mysql user and the correspondent password, that will be given SELECT access to all bases and will be configured as default in the `.my.cnf` file in the home directory of the `backuppc_client_user` unix user.  for the linux user that executes the backup scripts. Therefore `pre_dump.sh` or `post_dump.sh` scripts will be able to perform any database dump calling a simple mysql command. 
+  - `backuppc_db_dump_user_priv` are the privileges for `backuppc_db_dump_user` to perform backups. For example: `'*.*:PROCESS,SUPER,SELECT` or `*.*:RELOAD,PROCESS,LOCK TABLES,REPLICATION CLIENT`.
+  - `backuppc_db_dump_group_options` are the specific group options mariadb/mysql tools. For example: `client` (default) or `mariabackup`. 
 
 The following variables configure the web access for the client host's backups on BackupPC web interface:  
 - `backuppc_server_web_main_user`: # Main user with access to the client host's backups through BackupPC Web interface. Defaults to `backuppc`.

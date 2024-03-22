@@ -129,6 +129,8 @@ backuppc_db_server_type: ''
 backuppc_db_dump_user: "{{ backuppc_client_user }}"
 backuppc_db_dump_user_pass: 'put_it_from_a_vault'
 backuppc_db_to_dump_name: 'my_app'
+backuppc_db_dump_user_priv: '*.*:PROCESS,SUPER,SELECT'
+backuppc_db_dump_group_options: "client"
 
 ## BackupPC web interface
 
