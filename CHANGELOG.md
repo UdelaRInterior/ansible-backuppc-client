@@ -1,5 +1,15 @@
 # Change log of [ansible-backuppc-client](https://github.com/UdelaRInterior/ansible-backuppc-client) role
 
+## [v3.1.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v3.1.0) 
+
+* python3 (python3-mysqldb)
+* mysql database customizable privileges
+* _else_ border case values in jinja
+
+## [v3.0.1](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v3.0.1) 
+
+* last refactors and typos
+
 ## [v3.0.0](https://github.com/UdelaRInterior/ansible-backuppc-client/tree/v3.0.0) 
 
 * Retranscription of work on [v3.0.0 of `backuppc_server` role](https://github.com/UdelaRInterior/ansible-backuppc/releases/tag/v3.0.0)
