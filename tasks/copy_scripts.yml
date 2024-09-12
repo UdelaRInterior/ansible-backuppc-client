@@ -4,43 +4,62 @@
 - name: Pre-dump script
   block:
 
-  - name: FILE | Create directory for pre-dump scripts
+  - name: FILE | Create directory for pre dump script
     file:
-      path: '{{ backuppc_pre_dump_script | dirname }}'
+      path: '{{ backuppc_pre_dump_script_full | dirname }}'
       state: directory
       owner: '{{ backuppc_client_user }}'
       group: '{{ backuppc_client_group }}'
-      mode: 0766
+
+  - name: TEMPLATE | Template pre dump script
+    template:
+      src: '{{ backuppc_pre_dump_template }}'
+      dest: '{{ backuppc_pre_dump_script_full }}'
+      owner: '{{ backuppc_client_user }}'
+      group: '{{ backuppc_client_group }}'
+      mode: 0755
+    when: backuppc_pre_dump_template is defined
 
   - name: COPY | Copy pre_dump backup script
     copy:
-      src: "{{ backuppc_scripts_local_dir }}/{{ backuppc_pre_dump_script | basename }}"
-      dest: "{{ backuppc_pre_dump_script }}"
+      src: "{{ backuppc_scripts_local_dir }}/{{ backuppc_pre_dump_script_full | basename }}"
+      dest: "{{ backuppc_pre_dump_script_full }}"
       owner: "{{ backuppc_client_user }}"
       group: "{{ backuppc_client_group }}"
-      mode: 0766
+      mode: 0755
+    when: backuppc_pre_dump_template is not defined
 
-  when: backuppc_pre_dump_script is defined
+  when: backuppc_pre_dump_script_full is defined
+  
 
 - name: Post-dump script
   block:
 
-  - name: FILE | Create directory for post-dump scripts
+  - name: FILE | Create directory for post dump script
     file:
-      path: '{{  backuppc_post_dump_script | dirname }}'
+      path: '{{  backuppc_post_dump_script_full | dirname }}'
       state: directory
       owner: '{{ backuppc_client_user }}'
       group: '{{ backuppc_client_group }}'
-      mode: 0766
+      mode: 0755
+
+  - name: TEMPLATE | Template post dump script
+    template:
+      src: '{{ backuppc_post_dump_template }}'
+      dest: '{{ backuppc_post_dump_script_full }}'
+      owner: '{{ backuppc_client_user }}'
+      group: '{{ backuppc_client_group }}'
+      mode: 0755
+    when: backuppc_post_dump_template is defined
 
   - name: COPY | Copy post_dump backup script
     copy:
-      src: "{{ backuppc_scripts_local_dir }}/{{ backuppc_post_dump_script | basename }}"
-      dest: "{{ backuppc_post_dump_script }}"
+      src: "{{ backuppc_scripts_local_dir }}/{{ backuppc_post_dump_script_full | basename }}"
+      dest: "{{ backuppc_post_dump_script_full }}"
       owner: "{{ backuppc_client_user }}"
       group: "{{ backuppc_client_group }}"
-      mode: 0766
+      mode: 0755
+    when: backuppc_post_dump_template is not defined
 
-  when: backuppc_post_dump_script is defined
-
+  when: backuppc_post_dump_script_full is defined
 ...

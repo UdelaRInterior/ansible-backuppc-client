@@ -4,24 +4,24 @@
   file:
     path: "{{ backuppc_client_home }}/scripts"
     state: directory
-    owner: backuppc
-    group: backuppc
+    owner: '{{ backuppc_client_user }}'
+    group: '{{ backuppc_client_group }}'
     mode: 0766
 
-- name: TEMPLATE | Add script backup PostgreSQL
+- name: TEMPLATE | Add pre_dump.sh script for PostgreSQL
   template:
     src: etc/pgsql/dump.sh.j2
-    dest: '{{ backuppc_client_home }}/scripts/pre_dump.sh'
-    owner: backuppc
-    group: backuppc
+    dest: '{{ backuppc_pre_dump_script_full }}'
+    owner: '{{ backuppc_client_user }}'
+    group: '{{ backuppc_client_group }}'
     mode: 0766
 
-- name: TEMPLATE | Add script end_backup PostgreSQL
+- name: TEMPLATE | Add post_dump.sh script for PostgreSQL
   template:
     src: etc/pgsql/end_dump.sh.j2
-    dest: '{{ backuppc_client_home }}/scripts/post_dump.sh'
-    owner: backuppc
-    group: backuppc
+    dest: '{{ backuppc_post_dump_script_full }}'
+    owner: '{{ backuppc_client_user }}'
+    group: '{{ backuppc_client_group }}'
     mode: 0766
 
 ...

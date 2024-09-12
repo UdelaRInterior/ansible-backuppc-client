@@ -1,26 +1,6 @@
 ---
 # Variables for role backuppc_client
 
-# A default value for folders backed up
-backuppc_rsync_share_names_default:
-- /etc
-- /root
-- /var
-- /usr/local
-
-# As previously backuppc_rsync_share_names where not defined but a list was, we change the default for a legacy set of variables
-backuppc_rsync_share_names_legacy:
-- /
-## In a future major version change, it is suitable this variable to have only one definition in defaults/main.yml.  
-
-## Historical default value of backuppc_include_files, then named include_files
-backuppc_include_files_default:
-- /etc
-- /var/lib
-- /home
-- /root
-## In a future major version change, it is suitable this variable to be undefined.  
-
 backuppc_mysql_credentials_file:
   debian: '/etc/mysql/debian.cnf'
 

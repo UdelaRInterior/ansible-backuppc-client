@@ -1,22 +1,22 @@
 ---
 ##  backuppc_client role's variables to configure a host to backup in a BackupPC server
 
+# FQDN of the BackupPC server we are installing
+backuppc_server_name: localhost
+# The BackupPC server to configure and to fetch ssh key from. Normally installed with backuppc_server role
+# Tipycal definition: backuppc_server_name: backuppc.mydomain.org
+
 ## Client to backup access
 
 # Unix user used by the backuppc server to access to the client to backup it
 backuppc_client_user: backuppc
 backuppc_client_group: backuppc
 # The home dir of user backuppc which is used to perform backups in the client
-backuppc_client_home: "{{ backuppc_local_fetch_dir if backuppc_local_fetch_dir is defined else '/var/lib/backuppc' }}"
-## `backuppc_local_fetch_dir` is a backward's compatibility variable, now renamed for clarification
+backuppc_client_home: '/var/lib/backuppc'
 
-## Server basic client's configuration 
+### Server backuppc package variables 
 
-# The BackupPC server to configure and to fetch ssh key from. Normally installed with backuppc_server role
-backuppc_server_name: localhost
-# Tipycal definition: backuppc_server_name: backuppc.mydomain.org
-
-# BackupPC unic user in the server, from which are launched ssh backups to the client.
+# BackupPC unix user in the server, from which are launched ssh backups to the client.
 backuppc_server_user: backuppc
 # BackupPC group in the server
 backuppc_server_group: www-data
@@ -25,92 +25,140 @@ backuppc_server_home: /var/lib/backuppc
 # BackupPC configuration directory
 backuppc_server_config_dir: /etc/backuppc
 
-## Client's backup configuration in the server
+### Client's backup configuration in the server
 
 # Flag to configure or disable client's periodic backup
-backuppc_backup_state: "{{ backup_state if backup_state is defined else 'present' }}"  #present/absent, to configure or erase client host configuration in the server
-# `backup_state` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
+backuppc_backup_state: 'present'  #present/absent, to configure or erase client host configuration in the server
 
-# Flag that defines if the client host is configured by Ansible or not. If false, the role will only configure the server 
+#  Whether automatic backups are enabled and manual ones remain possible 
+backuppc_BackupsDisable: 0
+# By default, backups are enabled and run according to schedule. 
+# With 1, automatic backups are disabled and maual backups are possible. 
+# With 2, all backups are disabled
+
+# Flag that defines if the client host is configured by Ansible or not. If false, the role will only configure the server
 backuppc_client: true
+# If false, ssh access to server must be solved elsewhere. This aparameter may be useful if you don't have Ansible access to a host you need to backup.
 
-## List of folder's tree points to backup 
-backuppc_rsync_share_names: '{{ backuppc_rsync_share_names_legacy if include_files is defined else backuppc_rsync_share_names_default }}'
-# Define it as a list of folders
-# backuppc_rsync_share_names:
-# - /etc
-# - /root
-# - /var
-# - /usr/local
+### What to backup and when to do it
 
-# the folders inside the defined shares that will be dumped to the backup (see BackupPC documentation)
-backuppc_include_files: '{{ include_files if include_files is defined else backuppc_include_files_default }}'
-# Define it as a list of folders, similarly that backuppc_rsync_share_names
-# backuppc_include_files:
-# - /etc
-# - /home
-# - /var/lib
-## `include_files` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
-## in the future, it would be better to let this variable undefined by default
+##  Default list of system folders to backup from a client 
+## See RsyncShareName variable comments in config.pl template (backuppc_server role, templates/etc/backuppc/config.pl.j2, lines 1289 to 1312)
+backuppc_RsyncShareName: '{{ backuppc_rsync_share_names }}'
+# for backward's compatibility we define this full snake_case version of the variable unfortunatelly introduced in v2.X.Y:
+backuppc_rsync_share_names: 
+- /etc
+- /root
+- /var
+- /usr/local
+# This legacy variable may disappear in future versions of the role, update  your API!! 
 
-# You can also define a list of files to be excluded 
-# backuppc_exclude_files: 
-# Define it as a list of folders, similarly that backuppc_rsync_share_names
-## `exclude_files` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
-## See file tasks/compatibility.yml
+# Default list of files, eventually per share, to include in the backup of a client
+# List of directories or files to include in backups. This can be set to a string, a list of strings,
+# or, in the case of multiple shares, a dict of strings or lists. A dict is used to give a list of directories 
+# or files to backup for each share (the share name is the key). If a hash is used, a special key `"*"` means 
+#it applies to all shares that don't have a specific entry.
+#
+backuppc_BackupFilesOnly: '{{ backuppc_include_files if backuppc_include_files is defined else "" }}'
+#
+# See README.md for more explenations and example
+# backuppc_include_files is a legacy variable name, in v2.X.Y
+
+# List of directories or files to exclude from the backup: 
+#
+backuppc_BackupFilesExclude: '{{ backuppc_exclude_files if backuppc_exclude_files is defined else "" }}'
+# backuppc_exclude_files is a legacy variable name, in v2.X.Y
+# Syntax is similar than backuppc_BackupFilesOnly
 
 # Backup transfer method. All possibles BackupPC values are valid, but the role is designed and tested only for `rsync` method
-# backuppc_xfermethod: 
-## `xfermethod` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
-## See file tasks/compatibility.yml
+backuppc_XferMethod: '{{ backuppc_xfermethod if backuppc_xfermethod is defined else "rsync" }}'
+## `backuppc_xfermethod` is a legacy variable name, in v2.X.Y
 
 # BackupPC client host additional parameters  
 # backuppc_more:
-# You can, form instant, define longer periods of backups preservation
+# a dict of parameter: 'value', where `parameter` is a BackupPC config variable that is not directly considered here
+# You can, for instant, define longer periods of backups preservation:
+#
 # backuppc_more:
-#   ## 105 semanas, 2 añqqos
+#   ## 105 weeks, 2 years
 #   FullKeepCnt: 105
 #   FullKeepCntMin: 10
 #   FullAgeMax: 730
-#   ## 183 días, medio año
+#   ## 183 days, half a year
 #   IncrKeepCnt: 183
 #   IncrKeepCntMin: 10
 #   IncrAgeMax: 730
-## `more` is a backward's compatibility variable, now standardised in the namespace `backuppc_*`
-## See file tasks/compatibility.yml
+#
+# See defaults/main.yaml and templates/etc/backuppc/config.pl.j2 in backuppc_server role for full list
+# of parameters and their documentation 
 
+## Shell command to perform backups from the server to the client when transfer method is rsync: 
 backuppc_RsyncClientCmd: '$sshPath -x -q -l {{ backuppc_client_user }} $host sudo $rsyncPath $argList+'
+## shell commands to perform restores when transfer method is rsync: 
 backuppc_RsyncClientRestoreCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host sudo $rsyncPath $argList+'
 
-## Pre-dump and post-dump bacckup scripts and associated configuration parameters
+## Pre-dump and post-dump backup scripts and associated configuration parameters
 # Those scripts are useful to perform tasks such as databases dumps or snapshots to prepare coherent backups
 
-# Flag to install the scripts pre_dump.sh and post_dump.sh
-backuppc_scripts: false
-## This variable is deprecated, in future versions we should install each script if it's variable is defined.
-## Prepare your variables to API! Explicitely define the needed scripts in your playbook variables! 
+# Pre-dump script and Post-dump script
+# With `backuppc_pre_dump_script` we define a pre dump script, that will executed before rsync dumps
+# and with `backuppc_post_dump_script` a post dump script that will be executed after rsync dumps.
+# Scripts configuration will be done only if these variables are defined. 
+# `backuppc_pre_dump_script` and `backuppc_post_dump_script` define the paths of the scripts in the client host.
+# These can be absolute or relative paths. If the path is relative, the home dir of backuppc user, 
+# `backuppc_server_home`, is prependend to the script's path. 
+# 
+# For instance, you could define (it used to be the default value up to v2.X.Y of the role):
+#
+# backuppc_pre_dump_script: scripts/pre_dump.sh 
+# backuppc_post_dump_script: scripts/post_dump.sh
+#
+# The pre and post dump scripts will be '{{ backuppc_server_home }}/scripts/pre_dump.sh' and
+# '{{ backuppc_server_home }}/scripts/post_dump.sh
+#
 
-# Pre-dump script
-backuppc_pre_dump_script: '{{ backuppc_client_home }}/scripts/pre_dump.sh'
-# In future versions this variable should be undefined by default
-
-# Post-dump script
-backuppc_post_dump_script: '{{ backuppc_client_home }}/scripts/post_dump.sh'
-# In future versions this variable should be undefined by default
-
-# Local directory in the Ansible controller where the role finds the scripts
+# Local directory in the Ansible controller where the role finds the previous scripts to upload
 backuppc_scripts_local_dir: '{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/files/backuppc/'
+# i.e. a folder files/backuppc/ aside the host variables of the playbook
+# We should place our backup scripts in this file, with our Ansible code.
+# When `backuppc_db_server_type` is 'pgsql' (see hereafter) we can not use our own backuppc_pre_dump_script
+# and backuppc_post_dump_script.
 
-# Flag to give sudo rights to pre_dump.sh and post_dump.sh scripts
-backuppc_scripts_sudo: false
+# Templates to build the pre and post dump scripts
+# backuppc_pre_dump_template:
+# backuppc_post_dump_template: 
+# Scripts can also be templated from the playbooks host variables. 
+# if any of the two previous variables are defiend, the scripts will be templated instead of uploaded 
+# form previous directory. 
+# We must set the variable to the full path of the template from your playbook directory. For instance: 
+# backuppc_pre_dump_template: '{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/templates/pre_dump.sh.j2'
+# backuppc_post_dump_template: '{{ playbook_dir }}/host_vars/{{ inventory_hostname }}/templates/post_dump.sh.j2'
+# the role will take its templates from a folder /templates aside host's variables folder. 
+
+# Flags to execute pre dump and post dump scripts with sudo, so backuppc user becomes root
+# backuppc_scripts_sudo: false/true
+# backuppc_script_pre_sudo: false/ture
+# backuppc_script_post_sudo: false/true
+# The first flag makes both scripts to be executed with sudo, the following ones makes each of the scripts to be executed so.
+# If second or third flag is defined differently than first, its configuration prevails
+# If `backuppc_pre_dump_script` and/or `backuppc_post_dump_script` are undefined, the corresponding flags have no effect.
 
 # The ssh command for backuppc to execute the pre_dump and post_dump scripts
-backuppc_DumpPreUserCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host {% if backuppc_scripts_sudo %}sudo{% endif %} {{ backuppc_pre_dump_script }}'
-
-backuppc_DumpPostUserCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host {% if backuppc_scripts_sudo %}sudo{% endif %} {{ backuppc_post_dump_script }}'
+# `backuppc_DumpPreUserCmd` and `backuppc_DumpPostUserCmd` commands ared automatically defined in the roles tasks, according 
+# to the previous pre dump and post dump scripts variables definition. 
+# However you could define yourself any alternative value. 
+# For instance, if you need boths scriprs with sudo and you define your scripts with an absolute path, you could define these 
+# these commands as they where in versions 2.X.Y versions of the role: 
+#
+# backuppc_DumpPreUserCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host {% if backuppc_scripts_sudo %}sudo{% endif %} {{ backuppc_pre_dump_script }}'
+# backuppc_DumpPostUserCmd: '$sshPath -q -x -l {{ backuppc_client_user }} $host {% if backuppc_scripts_sudo %}sudo{% endif %} {{ backuppc_post_dump_script }}'
 
 # The commands authorized in the client to the user backuppc. This variable _must_ start with "Cmnd_Alias BACKUPS"
-backuppc_sudoer: 'Cmnd_Alias BACKUPS = /usr/bin/rsync{% if backuppc_scripts_sudo %}, {{ backuppc_pre_dump_script }}, {{ backuppc_post_dump_script }}{% endif %}'
+# backuppc_sudoer: 
+# This variable is defiend in tasks, according to previous parameters. It always start by 'Cmnd_Alias BACKUPS = /usr/bin/rsync', 
+# eventually followed, separated by commas, by pre and post dump scripts, if they require sudo
+# You can eventually overwrite this variable with your own value, for instance: 
+# backuppc_sudoer: 'Cmnd_Alias BACKUPS = /usr/bin/rsync, /var/lib/backuppc/scripts/pre_dump.sh, /var/lib/backuppc/scripts/post_dump.sh'
 
 ## Database dump helpers of the role
 
@@ -139,7 +187,7 @@ backuppc_server_web_main_user: '{{ backuppc_server_user }}'
 ## It's good to re-define this variable and to configura an alias mail in the server to be reported backup incidents
 
 # Additional users for the client host in BackupPC Web interface 
-backuppc_server_web_other_users: "{{ backuppc_users if backuppc_users is defined else '' }}"
+backuppc_server_web_other_users: ""
 # "user1,user2,user3": Users who have access to backups.
 # they must be configured in the backuppc server
 

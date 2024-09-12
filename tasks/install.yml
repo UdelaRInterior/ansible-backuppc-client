@@ -14,9 +14,9 @@
 - name: USER | Create unix user 'backuppc_client_user' in the client
   user:
     name: "{{ backuppc_client_user }}"
+    group: "{{ backuppc_client_group }}"
     home: '{{ backuppc_client_home }}'
     shell: /bin/bash
-    groups: "{{ backuppc_client_group }}"
 
 - name: FILE |  Create the user's ssh data in the client
   file:

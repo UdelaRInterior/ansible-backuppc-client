@@ -1,36 +1,99 @@
 #
 # {{ ansible_managed }}
 #
+# This is a host configuration file for BackupPC
+# Its values override for the host the main BackupPC config file values. 
 
-{% if backuppc_rsync_share_names is defined %}
+# Shares or folders of the host to backup
+
+{# backuppc_RsyncShareName is a list of folders (linux, rsync method) #}
 $Conf{RsyncShareName} = [
+{%- if backuppc_RsyncShareName is defined and backuppc_RsyncShareName | length > 0 %}
+{%- for share in backuppc_RsyncShareName %}
 
-{% for share in backuppc_rsync_share_names %}
-	'{{ share }}'{% if not loop.last %},{% endif %}
+  '{{ share }}'{% if not loop.last %},{% endif %}
 {% endfor %}
+
+{% else %}
+  '/'
+{% endif %}
 ];
-{% endif %}
 
-{% if backuppc_include_files is defined %}
-$Conf{BackupFilesOnly} = {'*' => [
+# Files to include in the backup of the host
+# Value can be:
+# - a string that is a files' pattern
+# - an array of files' patterns 
+# - a hash that associates a files' pattern or an array of files' patterns to each share
+#   a specjal value "*" for the share applies to all
 
-{% for item in backuppc_include_files %}
-		'{{ item }}'{% if not loop.last %},{% endif %}
+$Conf{BackupFilesOnly} = 
+{%- if backuppc_BackupFilesOnly is defined %}
+{% if backuppc_BackupFilesOnly is string %}
+ "{{ backuppc_BackupFilesOnly }}";
+{%- elif backuppc_BackupFilesOnly is mapping %} {
+{%- for Share, BackupFiles in backuppc_BackupFilesOnly.items() %}
+
+  '{{ Share }}' =>
+{%- if BackupFiles is string %} {{ BackupFiles }}
+{%- else %} [
+{%- for BackupFile in BackupFiles %}
+
+      '{{ BackupFile }}'{% if not loop.last %},{% endif %}
 {% endfor %}
-	]
-};
-{% endif %}
 
-{% if backuppc_exclude_files is defined %}
-$Conf{BackupFilesExclude} = {
-	'*' => [
-{% for item in backuppc_exclude_files %}
-		'{{ item }}'{% if not loop.last %},{% endif %}
-
+    ]
+{%- endif %}{% if not loop.last %},{% endif %}
 {% endfor %}
-	]
+
 };
-{% endif %}
+{%- else %} [
+{%- for backup_files in backuppc_BackupFilesOnly %}
+
+  '{{ backup_files }}'{% if not loop.last %},{% endif %}
+{% endfor %}
+
+];
+  {%- endif %}
+{%- else %}
+  {};
+{%- endif %}
+
+# Files to exclude from the backup of the host
+# Value structure is similar to BackupFilesOnly
+
+$Conf{BackupFilesExclude} = 
+{%- if backuppc_BackupFilesExclude is defined %}
+{% if backuppc_BackupFilesExclude is string %}
+ "{{ backuppc_BackupFilesExclude }}";
+{%- elif backuppc_BackupFilesExclude is mapping %} {
+{%- for Share, BackupFilesExclude in backuppc_BackupFilesExclude.items() %}
+
+  '{{ Share }}' =>
+{%- if BackupFilesExclude is string %} {{ BackupFilesExclude }}
+{%- else %} [
+{%- for FileExclude in BackupFilesExclude %}
+
+      '{{ FileExclude }}'{% if not loop.last %},{% endif %}
+{% endfor %}
+
+    ]
+{%- endif %}{% if not loop.last %},{% endif %}
+{% endfor %}
+
+};
+{%- else %} [
+{%- for FilesExclude in backuppc_BackupFilesExclude %}
+
+  '{{ FilesExclude }}'{% if not loop.last %},{% endif %}
+{% endfor %}
+
+];
+  {%- endif %}
+{%- else %}
+ {};
+{%- endif %}
+
+$Conf{BackupsDisable} = {{ backuppc_BackupsDisable }};
 
 $Conf{XferMethod} = '{{ backuppc_xfermethod | default("rsync", true) }}';
 
@@ -39,12 +102,12 @@ $Conf{ClientCharsetLegacy} = 'utf-8';
 $Conf{RsyncClientCmd} = '{{ backuppc_RsyncClientCmd }}';
 $Conf{RsyncClientRestoreCmd} = '{{ backuppc_RsyncClientRestoreCmd }}';
 
-{% if backuppc_scripts is defined and backuppc_scripts %}
-
+{% if backuppc_pre_dump_script_full is defined %}
 $Conf{DumpPreUserCmd} = '{{ backuppc_DumpPreUserCmd }}';
+{% endif %}
 
+{% if backuppc_post_dump_script_full is defined %}
 $Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
-
 {% endif %}
 
 {% if backuppc_db_server_type is defined and backuppc_db_server_type == 'pgsql' %}
@@ -59,9 +122,11 @@ $Conf{DumpPostUserCmd} = '{{ backuppc_DumpPostUserCmd }}';
 # More options...
 {% for key, value in backuppc_more.items() %}
 {% if value is string or value is number %}
+
 $Conf{{ '{' }}{{ key }}{{ '}' }} = '{{ value }}';
 {% else %}
 $Conf{{ '{' }}{{ key }}{{ '}' }} = [
+
   {% for i in value %}'{{ i }}'{% if not loop.last %}, {% endif %}
 {% endfor %}
 
